@@ -44,7 +44,6 @@ void drawBender()
 		drawLimb('f', legX[0], legY[0], legZ[0]);
 
 		glTranslatef(1,0,0);
-		glRotatef(180, 0, 0,1);
 		drawLimb('f', legX[1], legY[1], legZ[1]);
 /*
 		glRotatef(180, 1, 0,0);
@@ -283,7 +282,7 @@ void makeHand()
 
 void makeFoot()
 {
-	double plan[4] = {0.0, 0.0, 1.0, 0.0};
+	//double plan[4] = {0.0, 0.0, 1.0, 0.0};
 
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
@@ -291,12 +290,12 @@ void makeFoot()
 
 	glNewList(FOOT, GL_COMPILE);
 		glPushMatrix();
-			glClipPlane(GL_CLIP_PLANE0, plan);
-			glEnable(GL_CLIP_PLANE0);
+			//glClipPlane(GL_CLIP_PLANE0, plan);
+			//glEnable(GL_CLIP_PLANE0);
 
 			glColor3f(0.74, 0.8, 0.87);
 			glutSolidSphere(0.6, 20, 20);
-			glDisable(GL_CLIP_PLANE0);
+			//glDisable(GL_CLIP_PLANE0);
 			gluDisk(qobj, 0, 0.6, 20, 1); // pied gauche
 		glPopMatrix();
 	glEndList();
@@ -352,6 +351,11 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 					glTranslatef(bezX-olBezX, bezY-olBezY, bezZ-olBezZ);
 					glCallList(HAND);
 				}
+				else if(limb == 'f') // si on dessine une main on garde le dernier coeff de bezier et on dessine la main
+				{
+					glTranslatef(bezX-olBezX, bezY-olBezY, bezZ-olBezZ);
+					glCallList(FOOT);
+				}
 
 			glPopMatrix();
 
@@ -361,11 +365,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 			olBezZ=bezZ; // on garde les anciens coeffs.
 		}
 
-		if(limb == 'f') // si on dessine une main on garde le dernier coeff de bezier et on dessine la main
-		{
-			glTranslatef(bezX-olBezX, bezY-olBezY, bezZ-olBezZ);
-			glCallList(FOOT);
-		}
+		
 	/* ------------------------------------------ DEBUG -----------------------------------------------------
 		// affiche la courbe de bezier a l'origine du bras
 		glBegin(GL_LINE_STRIP);
