@@ -95,7 +95,7 @@ void makeBender()
 void makeBody()
 {
 	float innerBody=1, outerBody=1.25, hBody=2.8, hShoulder=0.5, rHead=0.6, hHead=1.2;
-	float innerAnt=0.02, outerAnt=0.05, hAnt0.5, rBottomAnt=0.1, rTopAnt=0.06;
+	float innerAnt=0.02, outerAnt=0.05, hAnt=0.5, rBottomAnt=0.1, rTopAnt=0.06;
 	
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
@@ -244,6 +244,8 @@ void makeEyes()
 
 void makeHand()
 {
+	float innerHand=0.25, outerHand=0.35, hHand=0.45;
+	float nbFinger=3, sFinger=0.2, rFinger=0.13, hFinger=0.3;
 	int i;
 
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
@@ -254,19 +256,19 @@ void makeHand()
 		glPushMatrix();
 			glColor3f(DARK_GRAY);
 
-			gluCylinder(qobj, 0.25, 0.35, 0.45, SLICES, STACKS); // main
-			glTranslatef(0,0,0.45);
-			gluDisk(qobj, 0, 0.35, SLICES, 1); // "paume"
+			gluCylinder(qobj, innerHand, outerHand, hHand, SLICES, STACKS); // hand
+			glTranslatef(0,0,hHand);
+			gluDisk(qobj, 0, outerHand, SLICES, STACKS); // "palm"
 
-			for(i=0;i<3;i++)
+			for(i=0;i<nbFinger;i++)
 			{
-				glTranslatef(0.2, 0, 0);
-				gluCylinder(qobj, 0.13, 0.13, 0.3, SLICES, STACKS); // doigt
-				glTranslatef(0, 0, 0.3);
-				glutSolidSphere(0.13, SLICES, STACKS); // bout du doigt
+				glTranslatef(sFinger, 0, 0);
+				gluCylinder(qobj, rFinger, rFinger, hFinger, SLICES, STACKS); // finger
+				glTranslatef(0, 0, hFinger);
+				glutSolidSphere(rFinger, SLICES, STACKS); // finger's top
 
-				glTranslatef(-0.2, 0, -0.3);
-				glRotatef(120, 0, 0, 1);
+				glTranslatef(-sFinger, 0, -hFinger);// reinit position
+				glRotatef(360/nbFinger, 0, 0, 1);
 			}
 		glPopMatrix();
 	glEndList();
@@ -275,6 +277,7 @@ void makeHand()
 
 void makeFoot()
 {
+	float rFoot = 0.6, edge=0.1;
 	double plan[4] = {0.0, 0.0, 1.0, 0.0};
 
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
@@ -282,15 +285,16 @@ void makeFoot()
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
 	glNewList(FOOT, GL_COMPILE);
-		glTranslatef(0, 0, -0.5);
-		glClipPlane(GL_CLIP_PLANE0, plan);
-		glEnable(GL_CLIP_PLANE0);
-		
 		glColor3f(DARK_GRAY);
-		glutSolidSphere(0.6, SLICES, STACKS);
+		glTranslatef(0, 0, -(rFoot-edge));
+		glClipPlane(GL_CLIP_PLANE0, plan);
+		
+		glEnable(GL_CLIP_PLANE0);
+			glutSolidSphere(rFoot, SLICES, STACKS);
 		glDisable(GL_CLIP_PLANE0);
-		gluDisk(qobj, 0, 0.6, SLICES, 1); // pied gauche
-		glTranslatef(0, 0, 0.5);
+		
+		gluDisk(qobj, 0, rFoot, SLICES, STACKS); // foot
+		glTranslatef(0, 0, rFoot-edge); //reinit Position
 	glEndList();
 }
 
@@ -303,58 +307,60 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 	float t, pas = 0.01;
 	int n=0;
 
-	GLUquadricObj* qobj;
-	qobj = gluNewQuadric();
-	gluQuadricDrawStyle(qobj, GLU_FILL);
-	gluQuadricNormals(qobj, GLU_SMOOTH);
+	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
+	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
+	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
 
 	glPushMatrix();
 		olBezX=Bezier4(controlsX, 0);
 		olBezY=Bezier4(controlsY, 0);
-		olBezZ=Bezier4(controlsZ, 0); //coords de base
+		olBezZ=Bezier4(controlsZ, 0); //origin coordinates
 
 		for(t=0+pas;t<1;t+=pas)
 		{
 			if(n%15==2)
 				glColor3f(LIGHT_BLACK);
 			else
-				glColor3f(BLUE_GRAY); // application de la couleut (1/15 a gris foncé)
+				glColor3f(BLUE_GRAY); // light black every 15th
 
 			glPushMatrix();
 
 				bezX=Bezier4(controlsX, t);
 				bezY=Bezier4(controlsY, t);
-				bezZ=Bezier4(controlsZ, t);// calcul des nouveau coeff de Bezier
+				bezZ=Bezier4(controlsZ, t);// calculation of the new Bezier coeff
+				
+				glTranslatef(olBezX, olBezY, olBezZ); //placing at the end of the precedent cylinder
 
 				angleYZ = (180*atan((bezX-olBezX)/(bezZ-olBezZ)))/PI;
-				angleXZ = (180*atan((bezY-olBezY)/(bezZ-olBezZ)))/PI; //calcul de l'angle de rotation
+				angleXZ = (180*atan((bezY-olBezY)/(bezZ-olBezZ)))/PI; //calculation of the rotation angle
+	
+				if((bezZ-olBezZ)<=0)
+					angleYZ+=180;
 
-				glTranslatef(olBezX, olBezY, olBezZ); // on se place a la fin du cylindre prec
-
-				glRotatef((bezZ-olBezZ)>0? angleYZ : 180+angleYZ, 0,1,0);
+				glRotatef(angleYZ, 0, 1, 0); //(bezZ-olBezZ)>0? angleYZ : 180+angleYZ, 0,1,0);
 				glRotatef(angleXZ, 1, 0, 0);//(bezZ-olBezZ)>0? angleXZ : 90+angleXZ, -1,0,0);
 
 				gluCylinder(qobj, 0.25, 0.25, sqrt((bezX-olBezX)*(bezX-olBezX)+(bezZ-olBezZ)*(bezZ-olBezZ)+(bezY-olBezY)*(bezY-olBezY)), SLICES, STACKS);
-				// nouveau cylindre : longueur racine carré des coords de fin.
-
-				if(t>1-pas && limb == 'h') // si on dessine une main on garde le dernier coeff de bezier et on dessine la main
-				{
-					glTranslatef(bezX-olBezX, bezY-olBezY, bezZ-olBezZ);
-					glCallList(HAND);
-				}
-
+				// new cylinder : lenght = square root of new coordinates - old one.
 			glPopMatrix();
 
 			n++;
 			olBezX=bezX;
 			olBezY=bezY;
-			olBezZ=bezZ; // on garde les anciens coeffs.
+			olBezZ=bezZ; // keeping old coeffs
 		}
 		
-		if(limb == 'f') // si on dessine une main on garde le dernier coeff de bezier et on dessine la main
+		glTranslatef(olBezX, olBezY, olBezZ);
+		
+		if(limb == 'h') //if it's a hand, same rotation than the last cylinder, and calling the HAND list
 		{
-			glTranslatef(olBezX, olBezY, olBezZ);
+			glRotatef(angleYZ, 0, 1, 0);
+			glRotatef(angleXZ, 1, 0, 0);
+			glCallList(HAND);
+		}
+		else if(limb == 'f') // if it's a foot, no rotation and calling the FOOT list
+		{
 			glCallList(FOOT);
 		}
 
