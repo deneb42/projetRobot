@@ -68,7 +68,7 @@ void render_scene()
 	glRotatef(angle_x, 0, 0, 1);
 
 	// ------------------------------------------------------------------------- HERE 2-------<<<
-
+	glRotatef(-90, 1, 0,0);
 	// ---------------------------------------------------------------------------------------<<<
 
 	glTranslatef(posi_x,posi_y,posi_z);
@@ -180,16 +180,7 @@ GLvoid window_motionFunc(int x, int y)
 
 void drawRepere()
 {
-	int i;
-
 	glBegin(GL_LINES);
-		/*for(i=-10;i<10;i++)
-		{
-			glColor3f((float)((i+10)*5)/20,0,0);
-			glVertex3f(i,0,0);
-			glColor3f((float)((i+10)*5)/20,0,0);
-			glVertex3f(i+1, 0, 0);
-		}*/
 		glColor3f(0,0,0);
 		glVertex3f(-10,0,0);
 		glColor3f(1,0,0);

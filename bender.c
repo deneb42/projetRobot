@@ -19,9 +19,9 @@ void makeFoot();
 void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ);
 
 
-float legX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, -0.1, -0.15, -0.2 }};
+float legX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, 0.1, 0.15, 0.2 }};
 float legY[2][4] = {{ 0.0, 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0, 0.0 }};
-float legZ[2][4] = {{ -0.01, 1.0, 2.0, 3.0 }, { -0.01, 1.0, 2.0, 3.0 }}; //control points for legs
+float legZ[2][4] = {{ -0.01, -1.0, -2.0, -3.0 }, { -0.01, -1.0, -2.0, -3.0 }}; //control points for legs
 
 float armX[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, 1.0, 2.0, 2.5 }};
 float armY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 },{ 0.0, 0.0, -0.1, -0.15 }};
@@ -36,38 +36,18 @@ void drawBender()
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
 
-	//glCallList(BENDER);
+	glCallList(BENDER);
 
 	glPushMatrix();
-		glRotatef(180, 1, 0,0);
-		glTranslatef(-0.5,0,5.6);
+		glTranslatef(-0.5,0,0);
 		drawLimb('f', legX[0], legY[0], legZ[0]);
 
 		glTranslatef(1,0,0);
 		drawLimb('f', legX[1], legY[1], legZ[1]);
-/*
-		glRotatef(180, 1, 0,0);
-		glTranslatef(legX[3],legY[3],-legZ[3]-0.5);
-
-		glClipPlane(GL_CLIP_PLANE0, plan);
-		glEnable(GL_CLIP_PLANE0);
-
-		glColor3f(0.74, 0.8, 0.87);
-		glutSolidSphere(0.6, 20, 20);
-		glDisable(GL_CLIP_PLANE0);
-		gluDisk(qobj, 0, 0.6, 20, 1); // pied gauche
-
-		glTranslatef(1 -2*legX[3],0,0);
-
-		glEnable(GL_CLIP_PLANE0);
-
-		glutSolidSphere(0.6, 20, 20);
-		glDisable(GL_CLIP_PLANE0);
-		gluDisk(qobj, 0, 0.6, 20, 1); // pied droit*/
 	glPopMatrix();
 
 	glPushMatrix();
-		glTranslatef(0, 0, -3.3); // on se place a la bonne hauteur
+		glTranslatef(0, 0, 2.2); // on se place a la bonne hauteur
 
 		for(i=-1;i<=1;i+=2)
 
@@ -96,8 +76,9 @@ float Bezier4 ( float coor[4] , float t ) {
 void makeBender()
 {
 	makeBody();
-	makeHand();
 	makeEyes();
+	makeHand();
+	makeFoot();
 }
 
 
@@ -109,7 +90,6 @@ void makeBody()
 
 	glNewList(BENDER, GL_COMPILE); // declaration de la liste Bender
 		glPushMatrix();
-			glRotatef(-90, 1, 0,0);
 			glColor3f(0.74, 0.8, 0.87);
 			gluCylinder(qobj, 1, 1.25, 2.8, 20, 20); // corps
 
@@ -282,22 +262,20 @@ void makeHand()
 
 void makeFoot()
 {
-	//double plan[4] = {0.0, 0.0, 1.0, 0.0};
+	double plan[4] = {0.0, 0.0, 1.0, 0.0};
 
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
 	glNewList(FOOT, GL_COMPILE);
-		glPushMatrix();
-			//glClipPlane(GL_CLIP_PLANE0, plan);
-			//glEnable(GL_CLIP_PLANE0);
+		glClipPlane(GL_CLIP_PLANE0, plan);
+		glEnable(GL_CLIP_PLANE0);
 
-			glColor3f(0.74, 0.8, 0.87);
-			glutSolidSphere(0.6, 20, 20);
-			//glDisable(GL_CLIP_PLANE0);
-			gluDisk(qobj, 0, 0.6, 20, 1); // pied gauche
-		glPopMatrix();
+		glColor3f(0.74, 0.8, 0.87);
+		glutSolidSphere(0.6, 20, 20);
+		glDisable(GL_CLIP_PLANE0);
+		gluDisk(qobj, 0, 0.6, 20, 1); // pied gauche
 	glEndList();
 }
 
@@ -339,22 +317,16 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 
 				glTranslatef(olBezX, olBezY, olBezZ); // on se place a la fin du cylindre prec
 
-
 				glRotatef((bezZ-olBezZ)>0? angleYZ : 180+angleYZ, 0,1,0);
-				glRotatef((bezZ-olBezZ)>0? angleXZ : 90+angleXZ, -1,0,0);
+				glRotatef(angleXZ, -1, 0, 0);//(bezZ-olBezZ)>0? angleXZ : 90+angleXZ, -1,0,0);
 
 				gluCylinder(qobj, 0.25, 0.25, sqrt((bezX-olBezX)*(bezX-olBezX)+(bezZ-olBezZ)*(bezZ-olBezZ)+(bezY-olBezY)*(bezY-olBezY)), 20, 20);
 				// nouveau cylindre : longueur racine carré des coords de fin.
 
-				if(limb == 'h' && t>1-2*pas) // si on dessine une main on garde le dernier coeff de bezier et on dessine la main
+				if(t>1-pas && limb == 'h') // si on dessine une main on garde le dernier coeff de bezier et on dessine la main
 				{
 					glTranslatef(bezX-olBezX, bezY-olBezY, bezZ-olBezZ);
 					glCallList(HAND);
-				}
-				else if(limb == 'f') // si on dessine une main on garde le dernier coeff de bezier et on dessine la main
-				{
-					glTranslatef(bezX-olBezX, bezY-olBezY, bezZ-olBezZ);
-					glCallList(FOOT);
 				}
 
 			glPopMatrix();
@@ -363,6 +335,12 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 			olBezX=bezX;
 			olBezY=bezY;
 			olBezZ=bezZ; // on garde les anciens coeffs.
+		}
+		
+		if(limb == 'f') // si on dessine une main on garde le dernier coeff de bezier et on dessine la main
+		{
+			glTranslatef(olBezX, olBezY, olBezZ);
+			glCallList(FOOT);
 		}
 
 		
