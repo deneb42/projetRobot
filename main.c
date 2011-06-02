@@ -19,7 +19,8 @@ short mouse_down_is_left = 0;
 
 void init_scene();
 void render_scene();
-void createBender();
+void makeBender();
+void drawBender();
 void drawRepere();
 
 GLvoid window_display();
@@ -50,7 +51,7 @@ int main(int argc, char* argv[])
 	// end of GL initializations
 
 	//--------------------------------------------------------------------------- HERE 1-------<<<
-	createBender();
+	makeBender();
 
 	//-----------------------------------------------------------------------------------------<<<
 
@@ -75,7 +76,7 @@ void render_scene()
 	drawRepere();
 
 	// -------------------------------------------------------------------------- HERE 3-------<<<
-	glCallList(2);
+	drawBender();
 
 	//-----------------------------------------------------------------------------------------<<<
 

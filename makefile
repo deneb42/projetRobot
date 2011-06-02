@@ -5,6 +5,7 @@
 #/__________________________________/
 
 
+LIBPATH =
 LIBRARY = -lglut -lGLU -lGL -lX11
 CFLAGS = -Wall
 LDFALGS = $(LIBPATH) $(LIBRARY)
@@ -18,16 +19,16 @@ PATH_PGM = ./
 PGM = TestBender
 
 
-# For the generic utilisation, 
+# For the generic utilisation,
 # DO NOT TOUCH ANYTHING UNDER THIS LINE !!!
 # ___________________________________________
 
-all : $(OBJS) 
-	$(GCC) -o $(PATH_PGM)$(PGM) $(OBJS) $(LDFALGS) 
+all : $(OBJS)
+	$(GCC) -o $(PATH_PGM)$(PGM) $(OBJS) $(LDFALGS)
 
 # generic method for all the .o
 %.o : %.c
-	$(GCC) $(CFLAGS) $(INC_PATH) -c $< 
+	$(GCC) $(CFLAGS) $(INC_PATH) -c $<
 
 run :
 	$(PATH_PGM)$(PGM)
