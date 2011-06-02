@@ -102,7 +102,6 @@ GLvoid window_reshape(GLsizei width, GLsizei height)
 
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//glOrtho(-10, 10, -10, 10, -100, 100);
 	glOrtho(-zoom, zoom, -zoom, zoom, -10*zoom, 10*zoom);
 	glMatrixMode(GL_MODELVIEW);
 }

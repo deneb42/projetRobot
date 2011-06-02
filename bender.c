@@ -4,11 +4,24 @@
 
 #include <math.h>
 
+//utils
 #define PI 3.1415926535898
+#define SLICES 20
+#define STACKS 20
+
+//lists
 #define BENDER 2
 #define EYES 3
 #define HAND 4
 #define FOOT 5
+
+//colors
+#define LIGHT_GRAY 0.84, 0.9, 0.95
+#define DARK_GRAY 0.74, 0.8, 0.87
+#define WHITE 0.99, 0.99, 0.82
+#define BLACK 0.04, 0.05, 0.05
+#define BLUE_GRAY 0.6,0.69,0.78
+#define LIGHT_BLACK 0.4, 0.5, 0.5
 
 
 float Bezier4 ( float coor[4] , float t );
@@ -23,14 +36,17 @@ float legX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, 0.1, 0.15, 0.2 }};
 float legY[2][4] = {{ 0.0, 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0, 0.0 }};
 float legZ[2][4] = {{ -0.01, -1.0, -2.0, -3.0 }, { -0.01, -1.0, -2.0, -3.0 }}; //control points for legs
 
-float armX[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, 1.0, 2.0, 2.5 }};
+float armX[2][4] = {{ 0.0, -1.0, -1.1, -1.2 }, { 0.0, 1.0, 1.1, 1.2 }};
 float armY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 },{ 0.0, 0.0, -0.1, -0.15 }};
-float armZ[2][4] = {{ 0.0, 1.0, 1.1, 1.2 }, { 0.0, 1.0, 1.1, 1.2 }}; // control points for arms
+float armZ[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, -1.0, -2.0, -2.5 }}; // control points for arms
+//0 is right, 1 is left
 
 
 void drawBender()
 {
-	int i;
+	int i, paddingLeg=0.5, heightShoulder=2.2, paddingShoulder=1.1, rShoulder=0.35;
+	
+	
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
@@ -39,31 +55,25 @@ void drawBender()
 	glCallList(BENDER);
 
 	glPushMatrix();
-		glTranslatef(-0.5,0,0);
-		drawLimb('f', legX[0], legY[0], legZ[0]);
+		glTranslatef(-paddingLeg,0,0);
+		drawLimb('f', legX[0], legY[0], legZ[0]); //right
 
-		glTranslatef(1,0,0);
-		drawLimb('f', legX[1], legY[1], legZ[1]);
-	glPopMatrix();
+		glTranslatef(2*paddingLeg,0,0);
+		drawLimb('f', legX[1], legY[1], legZ[1]); // left
 
-	glPushMatrix();
-		glTranslatef(0, 0, 2.2); // on se place a la bonne hauteur
 
-		for(i=-1;i<=1;i+=2)
-
+		glTranslatef(-paddingLeg, 0, heightShoulder); // placing at shoulder's height
+		
+		for(i=0;i<2;i++)
 		{
 			glPushMatrix();
-				glColor3f(0.74, 0.8, 0.87);
+				glColor3f(DARK_GRAY);
+				glTranslatef(((i*2)-1)*paddingShoulder, 0, 0); // then placing to the good side of the body, (i*2)-1 gives -1 then 1
 
-				glTranslatef(i*1.1, 0, 0); // puis du bon coté a la sortie du cylindre corps
-
-				glutSolidSphere(0.35, 20, 20); // epaule
-				glRotatef(i*90, 0, 1,0);
-				drawLimb('h', armX[i<0?i+1:i], armY[i<0?i+1:i], armZ[i<0?i+1:i]); // arm
-
+				glutSolidSphere(rShoulder, SLICES, STACKS); // drawing shoulder
+				drawLimb('h', armX[i], armY[i], armZ[i]); // arm
 			glPopMatrix();
 		}
-
 	glPopMatrix();
 }
 
@@ -78,7 +88,7 @@ void makeBender()
 	makeBody();
 	makeEyes();
 	makeHand();
-	makeFoot();
+	makeFoot(); // calling all the lists declarations
 }
 
 
@@ -90,30 +100,30 @@ void makeBody()
 
 	glNewList(BENDER, GL_COMPILE); // declaration de la liste Bender
 		glPushMatrix();
-			glColor3f(0.74, 0.8, 0.87);
+			glColor3f(DARK_GRAY);
 			gluCylinder(qobj, 1, 1.25, 2.8, 20, 20); // corps
 
 			gluDisk(qobj, 0, 1, 20, 1); // fesses
 
-			glColor3f(0.84, 0.9, 0.95);
+			glColor3f(LIGHT_GRAY);
 			glTranslatef(0,0,2.8);
 			gluCylinder(qobj, 1.25, 0.6, 0.5, 20, 20); // epaules
 
-			glColor3f(0.74, 0.8, 0.87);
+			glColor3f(DARK_GRAY);
 			glTranslatef(0,0,0.5);
 			gluCylinder(qobj, 0.6, 0.6, 1.2, 20, 20); // tete
 
 			glCallList(EYES);
 
-			glColor3f(0.74, 0.8, 0.87);
+			glColor3f(DARK_GRAY);
 			glTranslatef(0,0,1.2);
 			glutSolidSphere(0.6, 20, 20); // haut de la tete
 
-			glColor3f(0.6,0.69,0.78);
+			glColor3f(BLUE_GRAY);
 			glTranslatef(0,0,0.6);
 			gluCylinder(qobj, 0.05, 0.02, 0.5, 20, 20); // antenne
 
-			glColor3f(0.84, 0.9, 0.95);
+			glColor3f(LIGHT_GRAY);
 			glutSolidSphere(0.1, 20, 20); // base de l'antenne
 
 			glTranslatef(0,0,0.5);
@@ -137,7 +147,7 @@ void makeEyes()
 	glNewList(EYES,GL_COMPILE);
 		glPushMatrix();
 
-			glColor3f(0.84, 0.9, 0.95);
+			glColor3f(LIGHT_GRAY);
 
 			glTranslatef(-posi, -height, 0.95);
 			glRotatef(-90, 1,0,0);
@@ -149,7 +159,7 @@ void makeEyes()
 			gluDisk(qobj, inner, outer, 20, 1);
 			gluCylinder(qobj, inner, inner, height, 20, 20);
 
-			glColor3f(0.04, 0.05, 0.05);
+			glColor3f(BLACK);
 			glTranslatef(0, 0, depth);
 			gluDisk(qobj, 0, inner, 20, 1);// partie droite
 
@@ -163,7 +173,7 @@ void makeEyes()
 					glVertex3f(-0.04, 0.04, -depth); // fond au milieu
 			glEnd();
 
-			glColor3f(0.99, 0.99, 0.82);
+			glColor3f(WHITE);
 			glutSolidSphere(depth, 20, 20); // oeil droit
 
 			glTranslatef(0.44, 0, 0); // 0.44 = espacement entre les yeux
@@ -171,7 +181,7 @@ void makeEyes()
 
 			glutSolidSphere(depth, 20, 20); // oeil gauche
 
-			glColor3f(0.04, 0.05, 0.05);
+			glColor3f(BLACK);
 			glBegin(GL_POLYGON);
 					glVertex3f(-0.04, -0.04, -depth); //0.04*2 = taille oeil.
 					glVertex3f(0.04, -0.04, -depth);
@@ -194,7 +204,7 @@ void makeEyes()
 			gluDisk(qobj, 0, inner, 20, 20);
 			glTranslatef(0, 0, -depth);
 
-			glColor3f(0.84, 0.9, 0.95);
+			glColor3f(LIGHT_GRAY);
 			gluCylinder(qobj, inner, inner, height, 20, 20);
 			gluCylinder(qobj, outer, outer, height, 20, 20);
 			gluDisk(qobj, inner, outer, 20, 1); // coté gauche
@@ -239,7 +249,7 @@ void makeHand()
 
 	glNewList(HAND, GL_COMPILE);
 		glPushMatrix();
-			glColor3f(0.74, 0.8, 0.87);
+			glColor3f(DARK_GRAY);
 
 			gluCylinder(qobj, 0.25, 0.35, 0.45, 20, 20); // main
 			glTranslatef(0,0,0.45);
@@ -269,13 +279,15 @@ void makeFoot()
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
 	glNewList(FOOT, GL_COMPILE);
+		glTranslatef(0, 0, -0.5);
 		glClipPlane(GL_CLIP_PLANE0, plan);
 		glEnable(GL_CLIP_PLANE0);
-
-		glColor3f(0.74, 0.8, 0.87);
+		
+		glColor3f(DARK_GRAY);
 		glutSolidSphere(0.6, 20, 20);
 		glDisable(GL_CLIP_PLANE0);
 		gluDisk(qobj, 0, 0.6, 20, 1); // pied gauche
+		glTranslatef(0, 0, 0.5);
 	glEndList();
 }
 
@@ -302,9 +314,9 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 		for(t=0+pas;t<1;t+=pas)
 		{
 			if(n%15==2)
-				glColor3f(0.4,0.5,0.5);
+				glColor3f(LIGHT_BLACK);
 			else
-				glColor3f(0.6,0.69,0.78); // application de la couleut (1/15 a gris foncé)
+				glColor3f(BLUE_GRAY); // application de la couleut (1/15 a gris foncé)
 
 			glPushMatrix();
 
@@ -318,7 +330,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 				glTranslatef(olBezX, olBezY, olBezZ); // on se place a la fin du cylindre prec
 
 				glRotatef((bezZ-olBezZ)>0? angleYZ : 180+angleYZ, 0,1,0);
-				glRotatef(angleXZ, -1, 0, 0);//(bezZ-olBezZ)>0? angleXZ : 90+angleXZ, -1,0,0);
+				glRotatef(angleXZ, 1, 0, 0);//(bezZ-olBezZ)>0? angleXZ : 90+angleXZ, -1,0,0);
 
 				gluCylinder(qobj, 0.25, 0.25, sqrt((bezX-olBezX)*(bezX-olBezX)+(bezZ-olBezZ)*(bezZ-olBezZ)+(bezY-olBezY)*(bezY-olBezY)), 20, 20);
 				// nouveau cylindre : longueur racine carré des coords de fin.
