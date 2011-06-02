@@ -44,8 +44,8 @@ float armZ[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, -1.0, -2.0, -2.5 }}; // co
 
 void drawBender()
 {
-	int i, paddingLeg=0.5, heightShoulder=2.2, paddingShoulder=1.1, rShoulder=0.35;
-	
+	float paddingLeg=0.5, paddingShoulder=1.1, hShoulder=2.2, rShoulder=0.35;
+	int i; 
 	
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
@@ -62,7 +62,7 @@ void drawBender()
 		drawLimb('f', legX[1], legY[1], legZ[1]); // left
 
 
-		glTranslatef(-paddingLeg, 0, heightShoulder); // placing at shoulder's height
+		glTranslatef(-paddingLeg, 0, hShoulder); // placing at shoulder's height
 		
 		for(i=0;i<2;i++)
 		{
@@ -94,40 +94,43 @@ void makeBender()
 
 void makeBody()
 {
+	float innerBody=1, outerBody=1.25, hBody=2.8, hShoulder=0.5, rHead=0.6, hHead=1.2;
+	float innerAnt=0.02, outerAnt=0.05, hAnt0.5, rBottomAnt=0.1, rTopAnt=0.06;
+	
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
-	glNewList(BENDER, GL_COMPILE); // declaration de la liste Bender
+	glNewList(BENDER, GL_COMPILE); //bender body (WO arms and legs)
 		glPushMatrix();
 			glColor3f(DARK_GRAY);
-			gluCylinder(qobj, 1, 1.25, 2.8, 20, 20); // corps
+			gluCylinder(qobj, innerBody, outerBody, hBody, SLICES, STACKS); // body
 
-			gluDisk(qobj, 0, 1, 20, 1); // fesses
+			gluDisk(qobj, 0, innerBody, SLICES, STACKS); // shiny metal ass
 
 			glColor3f(LIGHT_GRAY);
-			glTranslatef(0,0,2.8);
-			gluCylinder(qobj, 1.25, 0.6, 0.5, 20, 20); // epaules
+			glTranslatef(0,0,hBody);
+			gluCylinder(qobj, outerBody, rHead, hShoulder, SLICES, STACKS); // shoulders
 
 			glColor3f(DARK_GRAY);
-			glTranslatef(0,0,0.5);
-			gluCylinder(qobj, 0.6, 0.6, 1.2, 20, 20); // tete
+			glTranslatef(0,0,hShoulder);
+			gluCylinder(qobj, rHead, rHead, hHead, SLICES, STACKS); // head
 
-			glCallList(EYES);
+			glCallList(EYES); // eyes / glasses
 
 			glColor3f(DARK_GRAY);
-			glTranslatef(0,0,1.2);
-			glutSolidSphere(0.6, 20, 20); // haut de la tete
+			glTranslatef(0,0,hHead);
+			glutSolidSphere(rHead, SLICES, STACKS); // head's top
 
 			glColor3f(BLUE_GRAY);
-			glTranslatef(0,0,0.6);
-			gluCylinder(qobj, 0.05, 0.02, 0.5, 20, 20); // antenne
+			glTranslatef(0,0,rHead);
+			gluCylinder(qobj, outerAnt, innerAnt, hAnt, SLICES, STACKS); // antenna
 
 			glColor3f(LIGHT_GRAY);
-			glutSolidSphere(0.1, 20, 20); // base de l'antenne
+			glutSolidSphere(rBottomAnt, SLICES, STACKS); // antenna's base
 
-			glTranslatef(0,0,0.5);
-			glutSolidSphere(0.06, 20, 20); // boule de l'antenne
+			glTranslatef(0,0,hAnt);
+			glutSolidSphere(rTopAnt, SLICES, STACKS); // antenna's top
 		glPopMatrix();
 	glEndList();
 }
@@ -155,13 +158,13 @@ void makeEyes()
 			glClipPlane(GL_CLIP_PLANE0, plan1);
 
 			glEnable(GL_CLIP_PLANE0);
-			gluCylinder(qobj, outer, outer, height, 20, 20);
-			gluDisk(qobj, inner, outer, 20, 1);
-			gluCylinder(qobj, inner, inner, height, 20, 20);
+			gluCylinder(qobj, outer, outer, height, SLICES, STACKS);
+			gluDisk(qobj, inner, outer, SLICES, 1);
+			gluCylinder(qobj, inner, inner, height, SLICES, STACKS);
 
 			glColor3f(BLACK);
 			glTranslatef(0, 0, depth);
-			gluDisk(qobj, 0, inner, 20, 1);// partie droite
+			gluDisk(qobj, 0, inner, SLICES, 1);// partie droite
 
 			glDisable(GL_CLIP_PLANE0);
 
@@ -174,12 +177,12 @@ void makeEyes()
 			glEnd();
 
 			glColor3f(WHITE);
-			glutSolidSphere(depth, 20, 20); // oeil droit
+			glutSolidSphere(depth, SLICES, STACKS); // oeil droit
 
 			glTranslatef(0.44, 0, 0); // 0.44 = espacement entre les yeux
 			glRotatef(180, 0,0,1);
 
-			glutSolidSphere(depth, 20, 20); // oeil gauche
+			glutSolidSphere(depth, SLICES, STACKS); // oeil gauche
 
 			glColor3f(BLACK);
 			glBegin(GL_POLYGON);
@@ -201,13 +204,13 @@ void makeEyes()
 			glClipPlane(GL_CLIP_PLANE0, plan1);
 
 			glEnable(GL_CLIP_PLANE0);
-			gluDisk(qobj, 0, inner, 20, 20);
+			gluDisk(qobj, 0, inner, SLICES, STACKS);
 			glTranslatef(0, 0, -depth);
 
 			glColor3f(LIGHT_GRAY);
-			gluCylinder(qobj, inner, inner, height, 20, 20);
-			gluCylinder(qobj, outer, outer, height, 20, 20);
-			gluDisk(qobj, inner, outer, 20, 1); // coté gauche
+			gluCylinder(qobj, inner, inner, height, SLICES, STACKS);
+			gluCylinder(qobj, outer, outer, height, SLICES, STACKS);
+			gluDisk(qobj, inner, outer, SLICES, 1); // coté gauche
 			glDisable(GL_CLIP_PLANE0);
 
 			for(i=-1;i<=1;i+=2)
@@ -251,16 +254,16 @@ void makeHand()
 		glPushMatrix();
 			glColor3f(DARK_GRAY);
 
-			gluCylinder(qobj, 0.25, 0.35, 0.45, 20, 20); // main
+			gluCylinder(qobj, 0.25, 0.35, 0.45, SLICES, STACKS); // main
 			glTranslatef(0,0,0.45);
-			gluDisk(qobj, 0, 0.35, 20, 1); // "paume"
+			gluDisk(qobj, 0, 0.35, SLICES, 1); // "paume"
 
 			for(i=0;i<3;i++)
 			{
 				glTranslatef(0.2, 0, 0);
-				gluCylinder(qobj, 0.13, 0.13, 0.3, 20, 20); // doigt
+				gluCylinder(qobj, 0.13, 0.13, 0.3, SLICES, STACKS); // doigt
 				glTranslatef(0, 0, 0.3);
-				glutSolidSphere(0.13, 20, 20); // bout du doigt
+				glutSolidSphere(0.13, SLICES, STACKS); // bout du doigt
 
 				glTranslatef(-0.2, 0, -0.3);
 				glRotatef(120, 0, 0, 1);
@@ -284,9 +287,9 @@ void makeFoot()
 		glEnable(GL_CLIP_PLANE0);
 		
 		glColor3f(DARK_GRAY);
-		glutSolidSphere(0.6, 20, 20);
+		glutSolidSphere(0.6, SLICES, STACKS);
 		glDisable(GL_CLIP_PLANE0);
-		gluDisk(qobj, 0, 0.6, 20, 1); // pied gauche
+		gluDisk(qobj, 0, 0.6, SLICES, 1); // pied gauche
 		glTranslatef(0, 0, 0.5);
 	glEndList();
 }
@@ -332,7 +335,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 				glRotatef((bezZ-olBezZ)>0? angleYZ : 180+angleYZ, 0,1,0);
 				glRotatef(angleXZ, 1, 0, 0);//(bezZ-olBezZ)>0? angleXZ : 90+angleXZ, -1,0,0);
 
-				gluCylinder(qobj, 0.25, 0.25, sqrt((bezX-olBezX)*(bezX-olBezX)+(bezZ-olBezZ)*(bezZ-olBezZ)+(bezY-olBezY)*(bezY-olBezY)), 20, 20);
+				gluCylinder(qobj, 0.25, 0.25, sqrt((bezX-olBezX)*(bezX-olBezX)+(bezZ-olBezZ)*(bezZ-olBezZ)+(bezY-olBezY)*(bezY-olBezY)), SLICES, STACKS);
 				// nouveau cylindre : longueur racine carré des coords de fin.
 
 				if(t>1-pas && limb == 'h') // si on dessine une main on garde le dernier coeff de bezier et on dessine la main

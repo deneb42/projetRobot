@@ -57,8 +57,6 @@ void window_specialDownFunc(int key, int x, int y);
 void window_specialUpFunc(int key, int x, int y);
 
 int main(int argc, char* argv[]) {
-	initControls();
-	initCamera();
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(400, 400);
@@ -80,6 +78,10 @@ int main(int argc, char* argv[]) {
 	glEnable(GL_DEPTH_TEST);
 	glClearColor(0.5,0.5,0.5, 1);
 	// end of GL initializations
+
+	initControls();
+	initCamera();
+	// end of ours initializations
 
 	//--------------------------------------------------------------------------- HERE 1-------<<<
 	//createBender();
