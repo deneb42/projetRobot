@@ -347,6 +347,8 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 	
 				if((bezZ-olBezZ)<=0)
 					angleYZ+=180;
+				if((bezZ-olBezZ)<=0)
+					angleXZ+=180;
 
 				glRotatef(angleYZ, 0, 1, 0); //(bezZ-olBezZ)>0? angleYZ : 180+angleYZ, 0,1,0);
 				glRotatef(angleXZ, 1, 0, 0);//(bezZ-olBezZ)>0? angleXZ : 90+angleXZ, -1,0,0);
