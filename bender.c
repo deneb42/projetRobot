@@ -347,6 +347,8 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 	
 				if((bezZ-olBezZ)<=0)
 					angleYZ+=180;
+				if((bezZ-olBezZ)<=0)
+					angleXZ+=180;
 
 				glRotatef(angleYZ, 0, 1, 0); //(bezZ-olBezZ)>0? angleYZ : 180+angleYZ, 0,1,0);
 				glRotatef(angleXZ, 1, 0, 0);//(bezZ-olBezZ)>0? angleXZ : 90+angleXZ, -1,0,0);
@@ -362,11 +364,12 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 		}
 		
 		glTranslatef(olBezX, olBezY, olBezZ);
+		glRotatef(angleYZ, 0, 1, 0);
+		glRotatef(angleXZ, 1, 0, 0);
 		
 		if(limb == 'h') //if it's a hand, same rotation than the last cylinder, and calling the HAND list
 		{
-			glRotatef(angleYZ, 0, 1, 0);
-			glRotatef(angleXZ, 1, 0, 0);
+			
 			glCallList(HAND);
 		}
 		else if(limb == 'f') // if it's a foot, no rotation and calling the FOOT list
