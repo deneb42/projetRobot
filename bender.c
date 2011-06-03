@@ -2,6 +2,7 @@
 #include <GL/glu.h>
 #include <GL/glut.h>
 
+#include <stdio.h>
 #include <math.h>
 
 //utils
@@ -311,7 +312,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
-
+/*
 	glPushMatrix();
 		olBezX=Bezier4(controlsX, 0);
 		olBezY=Bezier4(controlsY, 0);
@@ -360,21 +361,56 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 			glCallList(HAND);
 		}
 		else if(limb == 'f') // if it's a foot, no rotation and calling the FOOT list
-		{
 			glCallList(FOOT);
-		}
 
+	glPopMatrix();
+//*/
 		
-	/* ------------------------------------------ DEBUG -----------------------------------------------------
-		// affiche la courbe de bezier a l'origine du bras
+	//* ------------------------------------------ DEBUG -----------------------------------------------------
+		// draw the curve from wich the cylinder are extruded
 		glBegin(GL_LINE_STRIP);
 		glColor3f(0, 1, 1);
 		for(t=0;t<=1;t+=pas)
 		{
-			glVertex3f(Bezier4(controlesX, t), Bezier4(controlesY, t), Bezier4(controlesZ, t));
+			glVertex3f(Bezier4(controlsX, t), Bezier4(controlsY, t), Bezier4(controlsZ, t));
 		}
 		glEnd();
+		glColor3f(1, 1, 0);
+		
+		for(n=0;n<4;n++)
+		{
+			glBegin(GL_LINE_STRIP);
+				glVertex3f(controlsX[n],  controlsY[n] + 0.1 , controlsZ[n] );
+				glVertex3f(controlsX[n],  controlsY[n] - 0.1 , controlsZ[n] );
+			glEnd();
+			glBegin(GL_LINE_STRIP);
+				glVertex3f(controlsX[n],  controlsY[n] , controlsZ[n] + 0.1 );
+				glVertex3f(controlsX[n], controlsY[n] , controlsZ[n] - 0.1 );
+			glEnd();
+		}
+		/*
+		glBegin(GL_POINTS);
+			glVertex3f(controlsX[0], controlsY[0], controlsZ[0]);
+			glVertex3f(controlsX[1], controlsY[1], controlsZ[1]);
+			glVertex3f(controlsX[2], controlsY[2], controlsZ[2]);
+			glVertex3f(controlsX[3], controlsY[3], controlsZ[3]);
+		glEnd();
+		*/
 	// -------------------------------------------------------------------------------------------------------*/
+}
 
-	glPopMatrix();
+void printCoords(char part, int side)
+{
+	if(part=='h')
+	{
+		printf("main %cX: %f, %f, %f, %f\n", (side==0?'d':'g'), armX[side][0], armX[side][1], armX[side][2], armX[side][3]);
+		printf("main %cY: %f, %f, %f, %f\n", (side==0?'d':'g'), armY[side][0], armY[side][1], armY[side][2], armY[side][3]);
+		printf("main %cZ: %f, %f, %f, %f\n\n", (side==0?'d':'g'), armZ[side][0], armZ[side][1], armZ[side][2], armZ[side][3]);
+	}
+	else if(part=='f')
+	{
+		printf("pied %cX: %f, %f, %f, %f\n", (side==0?'d':'g'), legX[side][0], legX[side][1], legX[side][2], legX[side][3]);
+		printf("pied %cY: %f, %f, %f, %f\n", (side==0?'d':'g'), legY[side][0], legY[side][1], legY[side][2], legY[side][3]);
+		printf("pied %cZ: %f, %f, %f, %f\n\n", (side==0?'d':'g'), legZ[side][0], legZ[side][1], legZ[side][2], legZ[side][3]);
+	}
 }

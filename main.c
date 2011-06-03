@@ -23,6 +23,8 @@ void makeBender();
 void drawBender();
 void drawRepere();
 
+void printCoords();
+
 GLvoid window_display();
 GLvoid window_reshape(GLsizei width, GLsizei height);
 GLvoid window_key(unsigned char key, int x, int y);
@@ -69,6 +71,7 @@ void render_scene()
 
 	// ------------------------------------------------------------------------- HERE 2-------<<<
 	glRotatef(-90, 1, 0,0);
+	glRotatef(90, 0, 0, 1);
 	// ---------------------------------------------------------------------------------------<<<
 
 	glTranslatef(posi_x,posi_y,posi_z);
@@ -112,10 +115,10 @@ GLvoid window_key(unsigned char key, int x, int y)
 	switch(key)
 	{
 		case 'z':
-			posi_y-=0.1;
+			posi_z-=0.1;
 			break;
 		case 's':
-			posi_y+=0.1;
+			posi_z+=0.1;
 			break;
 		case 'q':
 			posi_x+=0.1;
@@ -140,6 +143,9 @@ GLvoid window_key(unsigned char key, int x, int y)
 		case 'e':
 			zoom-=0.1;
 			window_reshape(400, 400);
+			break;
+		case 'p' :
+			printCoords('f', 0);
 			break;
 		default:
 			exit(1);
