@@ -25,12 +25,14 @@ void drawRepere();
 
 void printCoords();
 void findNearest(float x, float y);
+void changePoint(float x, float y);
 
 GLvoid window_display();
 GLvoid window_reshape(GLsizei width, GLsizei height);
 GLvoid window_key(unsigned char key, int x, int y);
 GLvoid window_mouseFunc(int button, int state, int x, int y);
 GLvoid window_motionFunc(int x, int y);
+GLvoid window_passiveMotionFunc(int x, int y);
 
 int main(int argc, char* argv[])
 {
@@ -45,7 +47,8 @@ int main(int argc, char* argv[])
 	glutDisplayFunc(&window_display);
 	glutKeyboardFunc(&window_key);
 	glutMouseFunc(&window_mouseFunc);
-	glutPassiveMotionFunc(&window_motionFunc);
+	glutPassiveMotionFunc(&window_passiveMotionFunc);
+	glutMotionFunc(&window_motionFunc);
 	// end of the setting of glut's callback functions
 
 	glShadeModel(GL_SMOOTH);
@@ -172,17 +175,21 @@ GLvoid window_mouseFunc(int button, int state, int x, int y)
 	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
 		mouse_pos_x = x;
 		mouse_pos_y = y;
-		mouse_down_is_left = 1;
-		glPushMatrix();
 	}
 	else {
-		mouse_down_is_left = 0;
-		glPopMatrix();
+		//changePoint(-(zoom*(float)(x-mouse_pos_x)/200),-(zoom*(float)(y-mouse_pos_y)/200));
 	}
 }
 
-
 GLvoid window_motionFunc(int x, int y)
+{
+	changePoint(-(zoom*(float)(x-mouse_pos_x)/200),-(zoom*(float)(y-mouse_pos_y)/200));
+	mouse_pos_x = x;
+	mouse_pos_y = y;
+	glutPostRedisplay();
+}
+
+GLvoid window_passiveMotionFunc(int x, int y)
 {
 	/*
 	if( !mouse_down_is_left )

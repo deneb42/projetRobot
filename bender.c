@@ -42,7 +42,7 @@ float armY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 },{ 0.0, 0.0, -0.1, -0.15 }};
 float armZ[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, -1.0, -2.0, -2.5 }}; // control points for arms
 //0 is right, 1 is left
 
-int index;
+int indexNearest=0;
 float y,z;
 
 void drawBender()
@@ -81,9 +81,9 @@ void drawBender()
 	
 	glBegin(GL_LINE_STRIP);
 		glColor3f(1, 0, 0);
-		glVertex3f(legX[0][index], y, z);
+		glVertex3f(legX[0][indexNearest], y, z);
 		glColor3f(1, 1, 1);
-		glVertex3f(legX[0][index], legY[0][index], legZ[0][index]);
+		glVertex3f(legX[0][indexNearest], legY[0][indexNearest], legZ[0][indexNearest]);
 	glEnd();
 }
 
@@ -429,7 +429,7 @@ void findNearest(float parY, float parZ)
 	int i;
 	float dist, distMin = sqrt(pow(parY-legY[0][0], 2) + pow(parZ-legZ[0][0], 2));;
 	
-	index=0;
+	indexNearest=0;
 	
 	for(i=1;i<4;i++)
 	{
@@ -437,11 +437,18 @@ void findNearest(float parY, float parZ)
 		if(dist<distMin)
 		{
 			distMin = dist;
-			index=i;
+			indexNearest=i;
 		}
 	}
 	
 	y=parY; z=parZ;
 	
-	printf("lol, distmin : %f, index : %d\n", distMin, index);
+	//printf("lol, distmin : %f, indexNearest : %d\n", distMin, indexNearest);
+}
+
+
+void changePoint(float y, float z) 
+{
+	legY[0][indexNearest]+=y;
+	legZ[0][indexNearest]+=z;
 }
