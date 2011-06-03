@@ -321,7 +321,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
-/*
+//*
 	glPushMatrix();
 		olBezX=Bezier4(controlsX, 0);
 		olBezY=Bezier4(controlsY, 0);
