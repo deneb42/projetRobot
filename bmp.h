@@ -1,11 +1,11 @@
 #ifndef DEF_BMP
 #define DEF_BMP
 
-#ifdef TARGET_OS_MAC 
+#ifndef __APPLE__
 	#include <GL/gl.h>           
 	#include <GL/glu.h>         
 	#include <GL/glut.h> 
-#elif
+#else
 	#include <OpenGL/gl.h>           
 	#include <OpenGL/glu.h>         
 	#include <GLUT/glut.h> 

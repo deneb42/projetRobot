@@ -6,11 +6,11 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifdef TARGET_OS_MAC 
+#ifndef __APPLE__ 
 	#include <GL/gl.h>           
 	#include <GL/glu.h>         
 	#include <GL/glut.h> 
-#elif
+#else
 	#include <OpenGL/gl.h>           
 	#include <OpenGL/glu.h>         
 	#include <GLUT/glut.h> 
@@ -120,8 +120,8 @@ GLvoid window_reshape(GLsizei width, GLsizei height)
     
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	//glOrtho(-10, 10, -10, 10, -100, 100);
-	glOrtho(-zoom, zoom, -zoom, zoom, -10*zoom, 10*zoom);
+	glOrtho(-10, 10, -10, 10, -100, 100);
+	//glOrtho(-zoom, zoom, -zoom, zoom, -10*zoom, 10*zoom);
 	glMatrixMode(GL_MODELVIEW);
 }
 

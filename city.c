@@ -1,8 +1,8 @@
-#ifdef TARGET_OS_MAC 
+#ifndef __APPLE__
 	#include <GL/gl.h>           
 	#include <GL/glu.h>         
 	#include <GL/glut.h> 
-#elif
+#else
 	#include <OpenGL/gl.h>           
 	#include <OpenGL/glu.h>         
 	#include <GLUT/glut.h> 
@@ -15,13 +15,13 @@
 
 
 void load_textures(void);
-int texId[2]; //A créer en même temps que toutes les variables. La taille dépend du nombre de textures
+int texId[2]; //A cr√©er en m√™me temps que toutes les variables. La taille depend du nombre de textures
 
 
 
 //Loader de textures
 void load_textures(void) {
-    /* Si le programme n'arrive pas à charger la texture */
+    /* Si le programme n'arrive pas a charger la texture */
     if ( !(texId[0] = loadBMPTexture("textures/sol.bmp"))){
         /* Gestion de l'erreur */
         printf("Impossible de charger la texture 'sol'\n");
@@ -52,11 +52,11 @@ void createCity()
 	//GLUquadricObj* GLAPIENTRY qobj;
 
 
-	// allocation d¥une description de quadrique
+	// allocation d¬¥une description de quadrique
 	qobj = gluNewQuadric();
 	// la quadrique est pleine
 	gluQuadricDrawStyle(qobj, GLU_FILL);
-	// les ombrages, s¥il y en a, sont doux
+	// les ombrages, s¬¥il y en a, sont doux
 	gluQuadricNormals(qobj, GLU_SMOOTH);
         
     
@@ -88,7 +88,7 @@ void createCity()
     
     glBegin(GL_QUADS);
     
-    //4 faces latérales
+    //4 faces lat¬érales
     glTexCoord2i(0,0); glVertex3d(3,3,5);
     glTexCoord2i(0,1); glVertex3d(3,3,0);
     glTexCoord2i(1,1); glVertex3d(0,3,0);
@@ -135,7 +135,7 @@ void createCity()
     
     glBegin(GL_QUADS);
     
-    //4 faces latérales
+    //4 faces lat¬érales
     glVertex3d(3,3,5);
     glVertex3d(3,3,0);
     glVertex3d(0,3,0);
@@ -180,7 +180,7 @@ void createCity()
     
     glBegin(GL_QUADS);
     
-    //4 faces latérales
+    //4 faces lat¬érales
     glVertex3d(3,3,5);
     glVertex3d(3,3,0);
     glVertex3d(0,3,0);
