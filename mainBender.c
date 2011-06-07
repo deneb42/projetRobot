@@ -24,8 +24,8 @@ void drawBender();
 void drawRepere();
 
 void printCoords();
-void findNearest(float x, float y);
-void changePoint(float x, float y);
+void findNearest(char part, float x, float y);
+void changePoint(char part, float x, float y);
 
 GLvoid window_display();
 GLvoid window_reshape(GLsizei width, GLsizei height);
@@ -149,7 +149,7 @@ GLvoid window_key(unsigned char key, int x, int y)
 			window_reshape(400, 400);
 			break;
 		case 'p' :
-			printCoords('f', 0);
+			printCoords('h', 0);
 			break;
 		default:
 			exit(1);
@@ -183,7 +183,7 @@ GLvoid window_mouseFunc(int button, int state, int x, int y)
 
 GLvoid window_motionFunc(int x, int y)
 {
-	changePoint(-(zoom*(float)(x-mouse_pos_x)/200),-(zoom*(float)(y-mouse_pos_y)/200));
+	changePoint('h', -(zoom*(float)(x-mouse_pos_x)/200),-(zoom*(float)(y-mouse_pos_y)/200));
 	mouse_pos_x = x;
 	mouse_pos_y = y;
 	glutPostRedisplay();
@@ -206,7 +206,7 @@ GLvoid window_passiveMotionFunc(int x, int y)
 	//if(mouse_down_is_left)
 	//return;
 	
-	findNearest(-(zoom*((float)x-200)/200),-(zoom*((float)y-200)/200));
+	findNearest('h', -(zoom*((float)x-200)/200),-(zoom*((float)y-200)/200));
 	glutPostRedisplay();
 }
 

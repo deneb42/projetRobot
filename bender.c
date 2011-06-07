@@ -38,7 +38,7 @@ float legY[2][4] = {{ 0.0, 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0, 0.0 }};
 float legZ[2][4] = {{ -0.01, -1.0, -2.0, -3.0 }, { -0.01, -1.0, -2.0, -3.0 }}; //control points for legs
 
 float armX[2][4] = {{ 0.0, -1.0, -1.1, -1.2 }, { 0.0, 1.0, 1.1, 1.2 }};
-float armY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 },{ 0.0, 0.0, -0.1, -0.15 }};
+float armY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 }, { 0.0, 0.0, -0.1, -0.15 }};
 float armZ[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, -1.0, -2.0, -2.5 }}; // control points for arms
 //0 is right, 1 is left
 
@@ -81,9 +81,9 @@ void drawBender()
 	
 	glBegin(GL_LINE_STRIP);
 		glColor3f(1, 0, 0);
-		glVertex3f(legX[0][indexNearest], y, z);
+		glVertex3f(armX[0][indexNearest], y, z);
 		glColor3f(1, 1, 1);
-		glVertex3f(legX[0][indexNearest], legY[0][indexNearest], legZ[0][indexNearest]);
+		glVertex3f(armX[0][indexNearest]-paddingShoulder, armY[0][indexNearest], armZ[0][indexNearest]+hShoulder);
 	glEnd();
 }
 
@@ -264,8 +264,9 @@ void makeHand()
 
 	glNewList(HAND, GL_COMPILE);
 		glPushMatrix();
+			glRotatef(180, 1, 0, 0);
 			glColor3f(DARK_GRAY);
-
+			
 			gluCylinder(qobj, innerHand, outerHand, hHand, SLICES, STACKS); // hand
 			glTranslatef(0,0,hHand);
 			gluDisk(qobj, 0, outerHand, SLICES, STACKS); // "palm"
@@ -426,16 +427,27 @@ void printCoords(char part, int side)
 	}
 }
 
-void findNearest(float parY, float parZ)
+void findNearest(char mode, float parY, float parZ)
 {
 	int i;
-	float dist, distMin = sqrt(pow(parY-legY[0][0], 2) + pow(parZ-legZ[0][0], 2));;
+	float dist, distMin;
+	
+	if(mode=='f')
+		distMin = sqrt(pow(parY-legY[0][0], 2) + pow(parZ-legZ[0][0], 2));
+	else if(mode=='h')
+		distMin = sqrt(pow(parY+armY[0][0], 2) + pow(parZ-armZ[0][0]-2.2, 2));
+	else 
+		exit(1);
 	
 	indexNearest=0;
 	
 	for(i=1;i<4;i++)
 	{
-		dist=sqrt(pow(parY-legY[0][i], 2) + pow(parZ-legZ[0][i], 2));
+		if(mode=='f')
+			dist = sqrt(pow(parY-legY[0][i], 2) + pow(parZ-legZ[0][i], 2));
+		else if(mode=='h')
+			dist = sqrt(pow(parY+armY[0][i], 2) + pow(parZ-armZ[0][i]-2.2, 2));
+
 		if(dist<distMin)
 		{
 			distMin = dist;
@@ -449,8 +461,16 @@ void findNearest(float parY, float parZ)
 }
 
 
-void changePoint(float y, float z) 
+void changePoint(char mode, float y, float z) 
 {
-	legY[0][indexNearest]+=y;
-	legZ[0][indexNearest]+=z;
+	if(mode=='f')
+	{
+		legY[0][indexNearest]+=y;
+		legZ[0][indexNearest]+=z;
+	}
+	else if(mode=='h')
+	{
+		armY[0][indexNearest]+=y;
+		armZ[0][indexNearest]+=z;
+	}
 }
