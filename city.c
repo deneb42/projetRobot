@@ -1,6 +1,12 @@
-#include <OpenGL/gl.h>
-#include <OpenGL/glu.h>
-#include <GLUT/glut.h>
+#ifdef TARGET_OS_MAC 
+	#include <GL/gl.h>           
+	#include <GL/glu.h>         
+	#include <GL/glut.h> 
+#elif
+	#include <OpenGL/gl.h>           
+	#include <OpenGL/glu.h>         
+	#include <GLUT/glut.h> 
+#endif
 #include "bmp.h"
 
 
