@@ -27,13 +27,14 @@ float angle_x=0;
 float posi_x=0;
 float posi_y=0;
 float posi_z=0;
-float zoom=5;
+float zoom=15;
 int mouse_pos_x = 0, mouse_pos_y = 0;
 short mouse_down_is_left = 0;
 
 void init_scene();
 void render_scene();
-void createBender();
+void makeBender();
+void drawBender();
 void drawRepere();
 
 
@@ -63,12 +64,14 @@ int main(int argc, char* argv[])
     
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_DEPTH_TEST);
-	glClearColor(0.5,0.5,0.5, 1);
+	//glClearColor(0.5,0.5,0.5, 1);
+	glClearColor(0.654,0.894,0.956, 1);
 	// end of GL initializations
     
 	//--------------------------------------------------------------------------- HERE 1-------<<<
     
 	createCity();
+	makeBender();
     
 	//-----------------------------------------------------------------------------------------<<<
     
@@ -95,6 +98,9 @@ void render_scene()
     
 	// -------------------------------------------------------------------------- HERE 3-------<<<
 	glCallList(10);
+	
+	glTranslatef(10, 10, 4);
+	drawBender();
     
 	//-----------------------------------------------------------------------------------------<<<
     
@@ -120,8 +126,8 @@ GLvoid window_reshape(GLsizei width, GLsizei height)
     
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(-10, 10, -10, 10, -100, 100);
-	//glOrtho(-zoom, zoom, -zoom, zoom, -10*zoom, 10*zoom);
+	//glOrtho(-10, 10, -10, 10, -100, 100);
+	glOrtho(-zoom, zoom, -zoom, zoom, -10*zoom, 10*zoom);
 	glMatrixMode(GL_MODELVIEW);
 }
 
