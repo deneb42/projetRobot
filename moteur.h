@@ -11,20 +11,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
+#include "shapes.c"
 
 // Functions
 void initControls();
 void initCamera();
 void init_scene();
-void updateCameraPosition();
 void processCameraChange();
 double* getDirectionToLeft();
 
 void render_scene();
-//void createBender();
-void make_square();
-void make_cube();
-void drawRepere();
 
 GLvoid window_display();
 GLvoid window_reshape(GLsizei width, GLsizei height);

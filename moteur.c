@@ -1,10 +1,4 @@
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
+#include "moteur.h"
 
 float angle_z=0;
 float angle_y=0;
@@ -16,14 +10,6 @@ float zoom=5;
 int mouse_pos_x = 0, mouse_pos_y = 0;
 short mouse_down_is_left = 0;
 
-// Camera
-double cameraPosition[3];
-double cameraTarget[3];
-
-// Shapes
-int My_Square;
-int My_Cube;
-
 // Controls
 int ARROW_UP = 0;
 int ARROW_DOWN = 1;
@@ -31,32 +17,22 @@ int ARROW_LEFT = 2;
 int ARROW_RIGHT = 3;
 int arrowKeys[4];
 
+// Camera
+double cameraPosition[3];
+double cameraDirection[3];
+double phi;
+double theta;
+double sensitivity = .5;
+double cameraSpeed = .2;
+int cameraKeys[4];
+
 // Robot
 double position[3];
 double direction[3];
 double angle;
 
-// Functions
-void initControls();
-void initCamera();
-void init_scene();
-void updateCameraPosition();
-void render_scene();
-//void createBender();
-void make_square();
-void make_cube();
-void drawRepere();
-
-GLvoid window_display();
-GLvoid window_reshape(GLsizei width, GLsizei height);
-GLvoid window_key(unsigned char key, int x, int y);
-GLvoid window_mouseFunc(int button, int state, int x, int y);
-GLvoid window_motionFunc(int x, int y);
-GLvoid window_timer();
-void window_specialDownFunc(int key, int x, int y);
-void window_specialUpFunc(int key, int x, int y);
-
-int main(int argc, char* argv[]) {
+int main(int argc, char* argv[])
+{
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(400, 400);
@@ -67,6 +43,7 @@ int main(int argc, char* argv[]) {
 	glutReshapeFunc(&window_reshape);
 	glutDisplayFunc(&window_display);
 	glutKeyboardFunc(&window_key);
+	glutKeyboardUpFunc(&window_key_up);
 	glutMouseFunc(&window_mouseFunc);
 	glutMotionFunc(&window_motionFunc);
 	glutSpecialFunc(&window_specialDownFunc);
@@ -84,7 +61,6 @@ int main(int argc, char* argv[]) {
 	// end of ours initializations
 
 	//--------------------------------------------------------------------------- HERE 1-------<<<
-	//createBender();
 	make_square();
 	make_cube();
 
@@ -95,7 +71,37 @@ int main(int argc, char* argv[]) {
 	return EXIT_FAILURE;
 }
 
-void render_scene() {
+void initControls()
+{
+	int i;
+	for(i=0; i<4; i++)
+	{
+		arrowKeys[i] = 0;
+		position[i] = 0;
+	}
+	direction[0] = 1.0;
+	direction[1] = 0.0;
+	direction[2] = 0.0;
+	angle = 0.0;
+}
+
+void initCamera()
+{
+	int i;
+	for(i=0; i<4; i++)
+		cameraKeys[i] = 0;
+
+	cameraPosition[0] = 0;
+	cameraPosition[1] = 2;
+	cameraPosition[2] = 5;
+
+	phi = -20;
+	theta = -90;
+	processCameraChange();
+}
+
+void render_scene()
+{
 	// ------------------------------------------------------------------------- HERE 2-------<<<
 	glRotatef(-90, 1,0,0);
 
@@ -125,88 +131,40 @@ void render_scene() {
 	glutSwapBuffers();
 }
 
-GLvoid window_display() {
+GLvoid window_display()
+{
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glLoadIdentity();
-	updateCameraPosition();
+	processCameraChange();
 	render_scene();
-
 	glFlush();
 }
 
-GLvoid window_reshape(GLsizei width, GLsizei height) {
+GLvoid window_reshape(GLsizei width, GLsizei height)
+{
 	glViewport(0, 0, width, height);
-
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
-	glOrtho(-zoom, zoom, -zoom, zoom, -10*zoom, 10*zoom);
+	gluPerspective(70,(double)width/height,0.001,1000);
 	glMatrixMode(GL_MODELVIEW);
-	updateCameraPosition();
+	processCameraChange();
 }
 
-GLvoid window_key(unsigned char key, int x, int y) {
-	double diff[3];
-	double norme = 0.0;
-	int i;
+GLvoid window_key(unsigned char key, int x, int y)
+{
 	switch(key)
 	{
 		case 'z':
-			for (i=0; i<3; i++) {
-				diff[i] = cameraPosition[i] - cameraTarget[i];
-				norme += diff[i]*diff[i];
-			}
-			norme = sqrt(norme);
-			for (i=0; i<3; i++) {
-				printf("%f  ", diff[i] / norme);
-				cameraPosition[i] += diff[i] / norme;
-				cameraTarget[i] += diff[i] / norme;
-			}
-			for (i=0; i<3; i++)
-				printf("%f  ", cameraPosition[i]);
-			printf("\n");
+			cameraKeys[ARROW_UP] = 1;
 			break;
 		case 's':
-			for (i=0; i<3; i++) {
-				diff[i] = cameraPosition[i] - cameraTarget[i];
-				norme += diff[i]*diff[i];
-			}
-			norme = sqrt(norme);
-			for (i=0; i<3; i++) {
-				printf("%f  ", diff[i] / norme);
-				cameraPosition[i] -= diff[i] / norme;
-				cameraTarget[i] -= diff[i] / norme;
-			}
-			for (i=0; i<3; i++)
-				printf("%f  ", cameraPosition[i]);
-			printf("\n");
+			cameraKeys[ARROW_DOWN] = 1;
 			break;
 		case 'q':
-			posi_x+=0.1;
-			cameraPosition[0] -= 0.3;
-			cameraTarget[0] -= 0.3;
+			cameraKeys[ARROW_LEFT] = 1;
 			break;
 		case 'd':
-			posi_x-=0.1;
-			cameraPosition[0] += 0.3;
-			cameraTarget[0] += 0.3;
-			break;
-		case 'r':
-			angle_x=0;
-			angle_y=0;
-			angle_z=0;
-			posi_x=0;
-			posi_y=0;
-			posi_z=0;
-			zoom=5;
-			window_reshape(400, 400);
-			break;
-		case 'a':
-			zoom+=0.1;
-			window_reshape(400, 400);
-			break;
-		case 'e':
-			zoom-=0.1;
-			window_reshape(400, 400);
+			cameraKeys[ARROW_RIGHT] = 1;
 			break;
 		case ' ':
 			exit(1);
@@ -214,160 +172,62 @@ GLvoid window_key(unsigned char key, int x, int y) {
         default:
             break;
 	}
-	glutPostRedisplay();
 }
 
-GLvoid window_mouseFunc(int button, int state, int x, int y) {
-	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
+GLvoid window_key_up(unsigned char key, int x, int y)
+{
+	switch(key)
+	{
+		case 'z':
+			cameraKeys[ARROW_UP] = 0;
+			break;
+		case 's':
+			cameraKeys[ARROW_DOWN] = 0;
+			break;
+		case 'q':
+			cameraKeys[ARROW_LEFT] = 0;
+			break;
+		case 'd':
+			cameraKeys[ARROW_RIGHT] = 0;
+			break;
+        default:
+            break;
+	}
+}
+
+GLvoid window_mouseFunc(int button, int state, int x, int y)
+{
+	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
+	{
 		mouse_pos_x = x;
 		mouse_pos_y = y;
 		mouse_down_is_left = 1;
 		glPushMatrix();
 	 }
-	else {
+	else
+	{
 		mouse_down_is_left = 0;
 		glPopMatrix();
-	  }
+	}
 }
 
-GLvoid window_motionFunc(int x, int y) {
+GLvoid window_motionFunc(int x, int y)
+{
 	if( !mouse_down_is_left )
-	return;
+		return;
 
-	angle_z += y - mouse_pos_y;
-	angle_y += x - mouse_pos_x;
+	theta += (x - mouse_pos_x)*sensitivity;
+	phi -= (y - mouse_pos_y)*sensitivity;
 	mouse_pos_x = x;
 	mouse_pos_y = y;
-
+	processCameraChange();
 	glutPostRedisplay();
 }
 
-void drawRepere() {
-	glBegin(GL_LINES);
-		glColor3f(0,0,0);
-		glVertex3f(-10,0,0);
-		glColor3f(1,0,0);
-		glVertex3f(0, 0, 0);
-		glColor3f(1,0,0);
-		glVertex3f(0, 0, 0);
-		glColor3f(1,1,1);
-		glVertex3f(10, 0, 0);
-	glEnd();
-
-	glBegin(GL_LINES);
-		glColor3f(0,0,0);
-		glVertex3f(0,-10,0);
-		glColor3f(0,1,0);
-		glVertex3f(0,0, 0);
-		glColor3f(0,1,0);
-		glVertex3f(0,0, 0);
-		glColor3f(1,1,1);
-		glVertex3f(0, 10, 0);
-	glEnd();
-
-	glBegin(GL_LINES);
-		glColor3f(0,0,0);
-		glVertex3f(0,0,-10);
-		glColor3f(0,0,1);
-		glVertex3f(0, 0, 0);
-		glColor3f(0,0,1);
-		glVertex3f(0, 0, 0);
-		glColor3f(1,1,1);
-		glVertex3f(0, 0, 10);
-	glEnd();
-}
-
-void make_square() {
-  My_Square = 4;
-  glNewList(My_Square, GL_COMPILE);
-    glBegin(GL_POLYGON);
-      glVertex3f(0, 0, 0);
-      glVertex3f(1, 0, 0);
-      glVertex3f(1, 1, 0);
-      glVertex3f(0, 1, 0);
-    glEnd();
-  glEndList();
-}
-
-void make_cube() {
-  My_Cube = 5;
-
-  glNewList(My_Cube, GL_COMPILE);
-    glTranslatef(-0.5, -0.5, 0.5);
-
-    glColor3f(1, 0, 0);
-    glCallList(My_Square);
-
-    glColor3f(1, 1, 0);
-    glPushMatrix();
-    glTranslatef(0, 0, -1);
-    glCallList(My_Square);
-    glPopMatrix();
-
-    glColor3f(0, 1, 0);
-    glPushMatrix();
-    glRotatef(90, 0, 1, 0);
-    glCallList(My_Square);
-    glPopMatrix();
-
-    glColor3f(0, 1, 1);
-    glPushMatrix();
-    glTranslatef(1, 0, 0);
-    glRotatef(90, 0, 1, 0);
-    glCallList(My_Square);
-    glPopMatrix();
-
-    glColor3f(0, 0, 1);
-    glPushMatrix();
-    glRotatef(-90, 1, 0, 0);
-    glCallList(My_Square);
-    glPopMatrix();
-
-    glColor3f(1, 0, 1);
-    glPushMatrix();
-    glTranslatef(0, 1, 0);
-    glRotatef(-90, 1, 0, 0);
-    glCallList(My_Square);
-    glPopMatrix();
-  glEndList();
-
-}
-
-void initControls() {
-	int i;
-	for(i=0; i<4; i++) {
-		arrowKeys[i] = 0;
-		position[i] = 0;
-	}
-	direction[0] = 1.0;
-	direction[1] = 0.0;
-	direction[2] = 0.0;
-	angle = 0.0;
-}
-
-void initCamera() {
-	cameraPosition[0] = 1;
-	cameraPosition[1] = 1;
-	cameraPosition[2] = 1;
-
-	cameraTarget[0] = 0;
-	cameraTarget[1] = 0;
-	cameraTarget[2] = 0;
-	updateCameraPosition();
-}
-
-void updateCameraPosition() {
-	gluLookAt(cameraPosition[0],
-			  cameraPosition[1],
-			  cameraPosition[2],
-			  cameraTarget[0],
-			  cameraTarget[1],
-			  cameraTarget[2],
-			  0, 1, 0);
-}
-
-void window_specialDownFunc(int key, int x, int y) {
-	switch(key) {
+void window_specialDownFunc(int key, int x, int y)
+{
+	switch(key)
+	{
 		case GLUT_KEY_UP:
 			arrowKeys[ARROW_UP] = 1;
 			break;
@@ -404,14 +264,18 @@ void window_specialUpFunc(int key, int x, int y) {
 	}
 }
 
-GLvoid window_timer() {
+GLvoid window_timer()
+{
   int i;
   double speed[] = {.5, .5, .5};
   double rotation[] = {1.0, 0.0, 1.0};
   double angleIncrement = 1.0/18.0;
   glutTimerFunc(40,&window_timer,0);
+  double* leftDirection;
 
-  if (arrowKeys[ARROW_LEFT] && !arrowKeys[ARROW_RIGHT]) {
+	// Robot control
+  if (arrowKeys[ARROW_LEFT] && !arrowKeys[ARROW_RIGHT])
+  {
   	// Turn left
 	angle += angleIncrement;
 	if (angle>= M_PI)
@@ -419,7 +283,8 @@ GLvoid window_timer() {
 	direction[0] = cos (angle);
 	direction[1] = sin (angle);
   }
-  if (arrowKeys[ARROW_RIGHT] && !arrowKeys[ARROW_LEFT]) {
+  else if (arrowKeys[ARROW_RIGHT] && !arrowKeys[ARROW_LEFT])
+  {
 	// Turn right
 	angle -= angleIncrement;
 	if (angle < -M_PI)
@@ -428,15 +293,97 @@ GLvoid window_timer() {
 	direction[1] = sin (angle);
   }
 
-  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN]) {
+  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN])
+  {
 	// Move forward
 	position[0] += speed[0]*direction[0];
 	position[1] += speed[1]*direction[1];
   }
-  if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP]) {
+
+  else if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP])
+  {
 	// Move backward
 	position[0] -= speed[0]*direction[0] / 2;
 	position[1] -= speed[1]*direction[1] / 2;
   }
+
+
+  // Camera control
+  if (cameraKeys[ARROW_LEFT] && !cameraKeys[ARROW_RIGHT])
+  {
+  	// Move left
+	leftDirection = getDirectionToLeft();
+	for(i=0; i<3; i++)
+		cameraPosition[i] += leftDirection[i]*cameraSpeed;
+  }
+  else if (cameraKeys[ARROW_RIGHT] && !cameraKeys[ARROW_LEFT])
+  {
+	// Move right
+	leftDirection = getDirectionToLeft();
+	for(i=0; i<3; i++)
+		cameraPosition[i] -= leftDirection[i]*cameraSpeed;
+  }
+  if (cameraKeys[ARROW_UP] && !cameraKeys[ARROW_DOWN])
+  {
+	// Move forward
+	for (i=0; i<3; i++)
+		cameraPosition[i] += cameraDirection[i]*cameraSpeed;
+  }
+
+  else if (cameraKeys[ARROW_DOWN] && !cameraKeys[ARROW_UP])
+  {
+	// Move backward
+	for (i=0; i<3; i++)
+		cameraPosition[i] -= cameraDirection[i]*cameraSpeed;
+  }
   glutPostRedisplay();
 }
+
+
+void processCameraChange() {
+	double r;
+	if (phi > 89)
+		phi = 89;
+	else if (phi < -89)
+		phi = -89;
+	r = cos(phi*M_PI/180);
+	cameraDirection[0] = r * cos(theta*M_PI/180);
+	cameraDirection[1] = sin(phi*M_PI/180);
+	cameraDirection[2] = r * sin(theta*M_PI/180);
+
+	gluLookAt(cameraPosition[0],
+			  cameraPosition[1],
+			  cameraPosition[2],
+			  cameraPosition[0] + cameraDirection[0],
+			  cameraPosition[1] + cameraDirection[1],
+			  cameraPosition[2] + cameraDirection[2],
+			  0, 1, 0);
+}
+
+double* getDirectionToLeft() {
+	double up[3] = {0, 1, 0};
+	double left[3];
+	double norme=0;
+	int i;
+	left[0] = up[1]*cameraDirection[2] - up[2]*cameraDirection[1];
+	left[1] = up[2]*cameraDirection[0] - up[0]*cameraDirection[2];
+	left[2] = up[0]*cameraDirection[1] - up[1]*cameraDirection[0];
+	for(i=0; i<3; i++)
+		norme += cameraDirection[i]*cameraDirection[i];
+	norme = sqrt(norme);
+	for(i=0; i<3; i++)
+		left[i] /= norme;
+	return left;
+}
+
+
+
+
+
+
+
+
+
+
+
+
