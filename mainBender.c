@@ -176,7 +176,7 @@ GLvoid window_motionFunc(int x, int y)
 
 GLvoid window_passiveMotionFunc(int x, int y)
 {
-	findNearest('h', -(zoom*(float)(x-mouse_pos_x)/200),-(zoom*(float)(y-mouse_pos_y)/200));
+	findNearest('h', -(zoom*((float)x-200)/200),-(zoom*((float)y-200)/200));
 	glutPostRedisplay();
 }
 
