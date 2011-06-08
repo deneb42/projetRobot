@@ -5,6 +5,8 @@
 #include <stdio.h>
 #include <math.h>
 
+#include "bmp.h"
+
 //utils
 #define PI 3.1415926535898
 #define SLICES 20
@@ -42,8 +44,6 @@ float armY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 }, { 0.0, 0.0, -0.1, -0.15 }};
 float armZ[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, -1.0, -2.0, -2.5 }}; // control points for arms
 //0 is right, 1 is left
 
-int indexNearest=0;
-float y,z;
 
 void drawBender()
 {
@@ -79,13 +79,6 @@ void drawBender()
 			glPopMatrix();
 		}
 	glPopMatrix();
-	
-	glBegin(GL_LINE_STRIP);
-		glColor3f(1, 0, 0);
-		glVertex3f(armX[0][indexNearest], y, z);
-		glColor3f(1, 1, 1);
-		glVertex3f(armX[0][indexNearest]-paddingShoulder, armY[0][indexNearest], armZ[0][indexNearest]+hShoulder);
-	glEnd();
 }
 
 
@@ -393,7 +386,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 	glPopMatrix();
 //*/
 		
-	//* ------------------------------------------ DEBUG -----------------------------------------------------
+	/* ------------------------------------------ DEBUG -----------------------------------------------------
 		// draw the curve from wich the cylinder are extruded
 		glBegin(GL_LINE_STRIP);
 		glColor3f(0, 1, 1);
@@ -415,77 +408,6 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 				glVertex3f(controlsX[n], controlsY[n] , controlsZ[n] - 0.1 );
 			glEnd();
 		}
-		/*
-		glBegin(GL_POINTS);
-			glVertex3f(controlsX[0], controlsY[0], controlsZ[0]);
-			glVertex3f(controlsX[1], controlsY[1], controlsZ[1]);
-			glVertex3f(controlsX[2], controlsY[2], controlsZ[2]);
-			glVertex3f(controlsX[3], controlsY[3], controlsZ[3]);
-		glEnd();
-		*/
+	
 	// -------------------------------------------------------------------------------------------------------*/
-}
-
-void printCoords(char part, int side)
-{
-	if(part=='h')
-	{
-		printf("main %cX: %f, %f, %f, %f\n", (side==0?'d':'g'), armX[side][0], armX[side][1], armX[side][2], armX[side][3]);
-		printf("main %cY: %f, %f, %f, %f\n", (side==0?'d':'g'), armY[side][0], armY[side][1], armY[side][2], armY[side][3]);
-		printf("main %cZ: %f, %f, %f, %f\n\n", (side==0?'d':'g'), armZ[side][0], armZ[side][1], armZ[side][2], armZ[side][3]);
-	}
-	else if(part=='f')
-	{
-		printf("pied %cX: %f, %f, %f, %f\n", (side==0?'d':'g'), legX[side][0], legX[side][1], legX[side][2], legX[side][3]);
-		printf("pied %cY: %f, %f, %f, %f\n", (side==0?'d':'g'), legY[side][0], legY[side][1], legY[side][2], legY[side][3]);
-		printf("pied %cZ: %f, %f, %f, %f\n\n", (side==0?'d':'g'), legZ[side][0], legZ[side][1], legZ[side][2], legZ[side][3]);
-	}
-}
-
-void findNearest(char mode, float parY, float parZ)
-{
-	int i;
-	float dist, distMin;
-	
-	if(mode=='f')
-		distMin = sqrt(pow(parY-legY[0][0], 2) + pow(parZ-legZ[0][0], 2));
-	else if(mode=='h')
-		distMin = sqrt(pow(parY+armY[0][0], 2) + pow(parZ-armZ[0][0]-2.2, 2));
-	else 
-		exit(1);
-	
-	indexNearest=0;
-	
-	for(i=1;i<4;i++)
-	{
-		if(mode=='f')
-			dist = sqrt(pow(parY-legY[0][i], 2) + pow(parZ-legZ[0][i], 2));
-		else if(mode=='h')
-			dist = sqrt(pow(parY+armY[0][i], 2) + pow(parZ-armZ[0][i]-2.2, 2));
-
-		if(dist<distMin)
-		{
-			distMin = dist;
-			indexNearest=i;
-		}
-	}
-	
-	y=parY; z=parZ;
-	
-	//printf("lol, distmin : %f, indexNearest : %d\n", distMin, indexNearest);
-}
-
-
-void changePoint(char mode, float y, float z) 
-{
-	if(mode=='f')
-	{
-		legY[0][indexNearest]+=y;
-		legZ[0][indexNearest]+=z;
-	}
-	else if(mode=='h')
-	{
-		armY[0][indexNearest]+=y;
-		armZ[0][indexNearest]+=z;
-	}
 }
