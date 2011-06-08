@@ -55,9 +55,10 @@ void drawBender()
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
 
-	glCallList(BENDER);
-
 	glPushMatrix();
+		glTranslatef(0,0,3+0.5); // on se place a la bonne hauteur
+		glCallList(BENDER);
+
 		glTranslatef(-paddingLeg,0,0);
 		drawLimb('f', legX[0], legY[0], legZ[0]); //right
 
