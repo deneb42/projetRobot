@@ -30,7 +30,9 @@ int cameraKeys[4];
 double position[3];
 double direction[3];
 double angle;
-
+// Shapes
+int My_Square;
+int My_Cube;
 int main(int argc, char* argv[])
 {
 	glutInit(&argc, argv);
@@ -61,8 +63,7 @@ int main(int argc, char* argv[])
 	// end of ours initializations
 
 	//--------------------------------------------------------------------------- HERE 1-------<<<
-	make_square();
-	make_cube();
+	makeBender();
 
 	//-----------------------------------------------------------------------------------------<<<
 
@@ -110,20 +111,11 @@ void render_scene()
 	drawRepere();
 
 	// -------------------------------------------------------------------------- HERE 3-------<<<
-	// Cube
+	// Robot
 	glPushMatrix();
 	glTranslatef(position[0], position[1], position[2]);
-	glRotatef(angle * 180.0 / M_PI, 0, 0, 1);
-	glCallList(My_Cube);
-	glPopMatrix();
-
-	// Sphere showing the direction of the robot.
-	glPushMatrix();
-	glColor3f(1.0, 1.0, 1.0);
-	glTranslatef(position[0] + direction[0],
-				 position[1] + direction[1],
-				 position[2]);
-	glutSolidSphere(0.2, 50, 50);
+	glRotatef((angle+1.5) * 180.0 / M_PI, 0, 0, 1);
+	drawBender();
 	glPopMatrix();
 
 	//-----------------------------------------------------------------------------------------<<<
@@ -213,9 +205,6 @@ GLvoid window_mouseFunc(int button, int state, int x, int y)
 
 GLvoid window_motionFunc(int x, int y)
 {
-	if( !mouse_down_is_left )
-		return;
-
 	theta += (x - mouse_pos_x)*sensitivity;
 	phi -= (y - mouse_pos_y)*sensitivity;
 	mouse_pos_x = x;
@@ -315,6 +304,7 @@ GLvoid window_timer()
 	leftDirection = getDirectionToLeft();
 	for(i=0; i<3; i++)
 		cameraPosition[i] += leftDirection[i]*cameraSpeed;
+	free(leftDirection);
   }
   else if (cameraKeys[ARROW_RIGHT] && !cameraKeys[ARROW_LEFT])
   {
@@ -322,6 +312,7 @@ GLvoid window_timer()
 	leftDirection = getDirectionToLeft();
 	for(i=0; i<3; i++)
 		cameraPosition[i] -= leftDirection[i]*cameraSpeed;
+	free(leftDirection);
   }
   if (cameraKeys[ARROW_UP] && !cameraKeys[ARROW_DOWN])
   {
@@ -362,7 +353,7 @@ void processCameraChange() {
 
 double* getDirectionToLeft() {
 	double up[3] = {0, 1, 0};
-	double left[3];
+	double* left = (double*) malloc(sizeof(double) * 3);
 	double norme=0;
 	int i;
 	left[0] = up[1]*cameraDirection[2] - up[2]*cameraDirection[1];

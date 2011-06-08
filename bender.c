@@ -48,8 +48,8 @@ float armZ[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, -1.0, -2.0, -2.5 }}; // co
 void drawBender()
 {
 	float paddingLeg=0.5, paddingShoulder=1.1, hShoulder=2.2, rShoulder=0.35;
-	int i; 
-	
+	int i;
+
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
@@ -67,7 +67,7 @@ void drawBender()
 
 
 		glTranslatef(-paddingLeg, 0, hShoulder); // placing at shoulder's height
-		
+
 		for(i=0;i<2;i++)
 		{
 			glPushMatrix();
@@ -101,7 +101,7 @@ void makeBody()
 	float innerBody=1, outerBody=1.25, hBody=2.8, hShoulder=0.5, rHead=0.6, hHead=1.2;
 	float innerAnt=0.02, outerAnt=0.05, hAnt=0.5, rBottomAnt=0.1, rTopAnt=0.06;
 	int texId;
-	
+
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
@@ -109,8 +109,8 @@ void makeBody()
 	glNewList(BENDER, GL_COMPILE); //bender body (WO arms and legs)
 		glPushMatrix();
 			glColor3f(1, 1, 1);//DARK_GRAY);
-			
-			if ( !(texId = loadBMPTexture("textures/sol.bmp"))){
+
+			if ( !(texId = loadBMPTexture("C:/Users/Jeroen/Desktop/projetRobot/textures/sol.bmp"))){
 				/* Gestion de l'erreur */
 				printf("Impossible de charger la texture 'sol'\n");
 				exit(EXIT_FAILURE);
@@ -118,9 +118,9 @@ void makeBody()
 			gluQuadricTexture(qobj, GLU_TRUE);
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D,texId);
-			
+
 			gluCylinder(qobj, innerBody, outerBody, hBody, SLICES, STACKS); // body
-			
+
 			glDisable(GL_TEXTURE_2D);
 			gluQuadricTexture(qobj, GLU_FALSE);
 
@@ -274,7 +274,7 @@ void makeHand()
 		glPushMatrix();
 			glRotatef(180, 1, 0, 0);
 			glColor3f(DARK_GRAY);
-			
+
 			gluCylinder(qobj, innerHand, outerHand, hHand, SLICES, STACKS); // hand
 			glTranslatef(0,0,hHand);
 			gluDisk(qobj, 0, outerHand, SLICES, STACKS); // "palm"
@@ -307,11 +307,11 @@ void makeFoot()
 		glColor3f(DARK_GRAY);
 		glTranslatef(0, 0, -(rFoot-edge));
 		glClipPlane(GL_CLIP_PLANE0, plan);
-		
+
 		glEnable(GL_CLIP_PLANE0);
 			glutSolidSphere(rFoot, SLICES, STACKS);
 		glDisable(GL_CLIP_PLANE0);
-		
+
 		gluDisk(qobj, 0, rFoot, SLICES, STACKS); // foot
 		glTranslatef(0, 0, rFoot-edge); //reinit Position
 	glEndList();
@@ -348,12 +348,12 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 				bezX=Bezier4(controlsX, t);
 				bezY=Bezier4(controlsY, t);
 				bezZ=Bezier4(controlsZ, t);// calculation of the new Bezier coeff
-				
+
 				glTranslatef(olBezX, olBezY, olBezZ); //placing at the end of the precedent cylinder
 
 				angleYZ = (180*atan((bezX-olBezX)/(bezZ-olBezZ)))/PI;
 				angleXZ = (180*atan((bezY-olBezY)/(bezZ-olBezZ)))/PI; //calculation of the rotation angle
-	
+
 				if((bezZ-olBezZ)<=0)
 					angleYZ+=180;
 				if((bezZ-olBezZ)<=0)
@@ -371,9 +371,9 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 			olBezY=bezY;
 			olBezZ=bezZ; // keeping old coeffs
 		}
-		
+
 		glTranslatef(olBezX, olBezY, olBezZ);
-		
+
 		if(limb == 'h') //if it's a hand, same rotation than the last cylinder, and calling the HAND list
 		{
 			glRotatef(angleYZ, 0, 1, 0);
@@ -385,7 +385,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 
 	glPopMatrix();
 //*/
-		
+
 	/* ------------------------------------------ DEBUG -----------------------------------------------------
 		// draw the curve from wich the cylinder are extruded
 		glBegin(GL_LINE_STRIP);
@@ -396,7 +396,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 		}
 		glEnd();
 		glColor3f(1, 1, 0);
-		
+
 		for(n=0;n<4;n++)
 		{
 			glBegin(GL_LINE_STRIP);
@@ -408,6 +408,6 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 				glVertex3f(controlsX[n], controlsY[n] , controlsZ[n] - 0.1 );
 			glEnd();
 		}
-	
+
 	// -------------------------------------------------------------------------------------------------------*/
 }

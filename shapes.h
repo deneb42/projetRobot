@@ -1,3 +1,5 @@
+#ifndef SHAPES_H
+#define SHAPES_H
 #ifndef __APPLE__
 #include <GL/gl.h>
 #include <GL/glu.h>
@@ -12,3 +14,5 @@
 void make_square();
 void make_cube();
 void drawRepere();
+
+#endif
