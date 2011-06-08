@@ -82,7 +82,7 @@ void drawBender()
 	
 	glBegin(GL_LINE_STRIP);
 		glColor3f(1, 0, 0);
-		glVertex3f(armX[0][indexNearest], y, z);
+		glVertex3f(y, armX[0][indexNearest], z);
 		glColor3f(1, 1, 1);
 		glVertex3f(armX[0][indexNearest]-paddingShoulder, armY[0][indexNearest], armZ[0][indexNearest]+hShoulder);
 	glEnd();
@@ -440,25 +440,25 @@ void findNearest(char mode, float parY, float parZ)
 	float dist, distMin;
 	
 	if(mode=='f')
-		distMin = sqrt(pow(parY-legY[0][0], 2) + pow(parZ-legZ[0][0], 2));
+		distMin = sqrt(pow(parY-legX[0][0], 2) + pow(parZ-legZ[0][0], 2));
 	else if(mode=='h')
-		distMin = sqrt(pow(parY+armY[0][0], 2) + pow(parZ-armZ[0][0]-2.2, 2));
+		distMin = sqrt(pow(parY+armX[0][0], 2) + pow(parZ-armZ[0][0]-2.2, 2));
 	else 
 		exit(1);
 	
-	indexNearest=0;
+	//indexNearest=0;
 	
 	for(i=1;i<4;i++)
 	{
 		if(mode=='f')
-			dist = sqrt(pow(parY-legY[0][i], 2) + pow(parZ-legZ[0][i], 2));
+			dist = sqrt(pow(parY-legX[0][i], 2) + pow(parZ-legZ[0][i], 2));
 		else if(mode=='h')
-			dist = sqrt(pow(parY+armY[0][i], 2) + pow(parZ-armZ[0][i]-2.2, 2));
+			dist = sqrt(pow(parY+armX[0][i], 2) + pow(parZ-armZ[0][i]-2.2, 2));
 
 		if(dist<distMin)
 		{
 			distMin = dist;
-			indexNearest=i;
+			//indexNearest=i;
 		}
 	}
 	
@@ -467,17 +467,21 @@ void findNearest(char mode, float parY, float parZ)
 	//printf("lol, distmin : %f, indexNearest : %d\n", distMin, indexNearest);
 }
 
+void setNearest(int i)
+{
+	indexNearest = i;
+}
 
 void changePoint(char mode, float y, float z) 
 {
 	if(mode=='f')
 	{
-		legY[0][indexNearest]+=y;
+		legX[0][indexNearest]+=y;
 		legZ[0][indexNearest]+=z;
 	}
 	else if(mode=='h')
 	{
-		armY[0][indexNearest]+=y;
+		armX[0][indexNearest]+=y;
 		armZ[0][indexNearest]+=z;
 	}
 }

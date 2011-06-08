@@ -75,7 +75,7 @@ void render_scene()
 
 	// ------------------------------------------------------------------------- HERE 2-------<<<
 	glRotatef(-90, 1, 0,0);
-	glRotatef(90, 0, 0, 1);
+	//glRotatef(90, 0, 0, 1);
 	// ---------------------------------------------------------------------------------------<<<
 
 	glTranslatef(posi_x,posi_y,posi_z);
@@ -151,6 +151,18 @@ GLvoid window_key(unsigned char key, int x, int y)
 		case 'p' :
 			printCoords('h', 0);
 			break;
+		case 'y' :
+			setNearest(0);
+			break;
+		case 'u' :
+			setNearest(1);
+			break;
+		case 'i' :
+			setNearest(2);
+			break;
+		case 'o' :
+			setNearest(3);
+			break;
 		default:
 			exit(1);
 			break;
@@ -168,7 +180,7 @@ GLvoid window_mouseFunc(int button, int state, int x, int y)
 
 GLvoid window_motionFunc(int x, int y)
 {
-	changePoint('h', -(zoom*(float)(x-mouse_pos_x)/200),-(zoom*(float)(y-mouse_pos_y)/200));
+	changePoint('h', (zoom*(float)(x-mouse_pos_x)/200),-(zoom*(float)(y-mouse_pos_y)/200));
 	mouse_pos_x = x;
 	mouse_pos_y = y;
 	glutPostRedisplay();
@@ -176,7 +188,7 @@ GLvoid window_motionFunc(int x, int y)
 
 GLvoid window_passiveMotionFunc(int x, int y)
 {
-	findNearest('h', -(zoom*((float)x-200)/200),-(zoom*((float)y-200)/200));
+	findNearest('h', (zoom*((float)x-200)/200),-(zoom*((float)y-200)/200));
 	glutPostRedisplay();
 }
 
