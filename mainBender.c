@@ -160,61 +160,24 @@ GLvoid window_key(unsigned char key, int x, int y)
 
 GLvoid window_mouseFunc(int button, int state, int x, int y)
 {
-	//*
-	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
-		mouse_pos_x = x;
-		mouse_pos_y = y;
-		mouse_down_is_left = 1;
-		glPushMatrix();
-	 }
-	else {
-		mouse_down_is_left = 0;
-		glPopMatrix();
-	  }
-	/*/
 	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
 		mouse_pos_x = x;
 		mouse_pos_y = y;
 	}
-	//*/
 }
 
 GLvoid window_motionFunc(int x, int y)
 {
-	//*
-	if( !mouse_down_is_left )
-	return;
-
-	angle_z += y - mouse_pos_y;
-	angle_y += x - mouse_pos_x;
-
-	mouse_pos_x = x;
-	mouse_pos_y = y;
-
-	glutPostRedisplay();
-	/*/
-	
 	changePoint('h', -(zoom*(float)(x-mouse_pos_x)/200),-(zoom*(float)(y-mouse_pos_y)/200));
 	mouse_pos_x = x;
 	mouse_pos_y = y;
 	glutPostRedisplay();
-	//*/
 }
 
 GLvoid window_passiveMotionFunc(int x, int y)
 {
-	//*
-	if( !mouse_down_is_left )
-	return;
-
-	angle_z += y - mouse_pos_y;
-	angle_y += x - mouse_pos_x;
-
-	mouse_pos_x = x;
-	mouse_pos_y = y;
-
+	findNearest('h', -(zoom*(float)(x-mouse_pos_x)/200),-(zoom*(float)(y-mouse_pos_y)/200));
 	glutPostRedisplay();
-	//*/
 }
 
 void drawRepere()

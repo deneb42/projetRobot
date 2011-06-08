@@ -56,7 +56,7 @@ void drawBender()
 
 
 	glPushMatrix();
-		glTranslatef(0,0,3+0.5); // on se place a la bonne hauteur
+		//glTranslatef(0,0,3+0.5); // on se place a la bonne hauteur
 		glCallList(BENDER);
 
 		glTranslatef(-paddingLeg,0,0);
@@ -415,14 +415,6 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 				glVertex3f(controlsX[n], controlsY[n] , controlsZ[n] - 0.1 );
 			glEnd();
 		}
-		/*
-		glBegin(GL_POINTS);
-			glVertex3f(controlsX[0], controlsY[0], controlsZ[0]);
-			glVertex3f(controlsX[1], controlsY[1], controlsZ[1]);
-			glVertex3f(controlsX[2], controlsY[2], controlsZ[2]);
-			glVertex3f(controlsX[3], controlsY[3], controlsZ[3]);
-		glEnd();
-		*/
 	// -------------------------------------------------------------------------------------------------------*/
 }
 
