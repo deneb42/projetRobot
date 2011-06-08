@@ -106,6 +106,7 @@ void makeBody()
 {
 	float innerBody=1, outerBody=1.25, hBody=2.8, hShoulder=0.5, rHead=0.6, hHead=1.2;
 	float innerAnt=0.02, outerAnt=0.05, hAnt=0.5, rBottomAnt=0.1, rTopAnt=0.06;
+	int texId;
 	
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
@@ -113,8 +114,21 @@ void makeBody()
 
 	glNewList(BENDER, GL_COMPILE); //bender body (WO arms and legs)
 		glPushMatrix();
-			glColor3f(DARK_GRAY);
+			glColor3f(1, 1, 1);//DARK_GRAY);
+			
+			if ( !(texId = loadBMPTexture("textures/sol.bmp"))){
+				/* Gestion de l'erreur */
+				printf("Impossible de charger la texture 'sol'\n");
+				exit(EXIT_FAILURE);
+			}
+			gluQuadricTexture(qobj, GLU_TRUE);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,texId);
+			
 			gluCylinder(qobj, innerBody, outerBody, hBody, SLICES, STACKS); // body
+			
+			glDisable(GL_TEXTURE_2D);
+			gluQuadricTexture(qobj, GLU_FALSE);
 
 			gluDisk(qobj, 0, innerBody, SLICES, STACKS); // shiny metal ass
 

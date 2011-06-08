@@ -12,7 +12,7 @@ LDFALGS = $(LIBPATH) $(LIBRARY)
 GCC=gcc
 
 # Name of the files (more .o)
-OBJS = mainBender.o bender.o #bender.o bmp.o city.o maincity.o
+OBJS = mainBender.o bender.o bmp.o #bender.o bmp.o city.o maincity.o
 # Path where the bin will be
 PATH_PGM = ./
 # Name of the bin
