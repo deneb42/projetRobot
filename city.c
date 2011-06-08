@@ -1,8 +1,8 @@
-#ifdef TARGET_OS_MAC 
+#ifndef __APPLE__
 	#include <GL/gl.h>           
 	#include <GL/glu.h>         
 	#include <GL/glut.h> 
-#elif
+#else
 	#include <OpenGL/gl.h>           
 	#include <OpenGL/glu.h>         
 	#include <GLUT/glut.h> 
@@ -61,7 +61,6 @@ void createCity()
         
     
 	glNewList(10, GL_COMPILE); // declaration de la liste City
-    
     
     //sol
     glEnable(GL_TEXTURE_2D);

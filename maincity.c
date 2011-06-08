@@ -6,11 +6,11 @@
 //  Copyright 2011 __MyCompanyName__. All rights reserved.
 //
 
-#ifdef TARGET_OS_MAC 
+#ifndef __APPLE__ 
 	#include <GL/gl.h>           
 	#include <GL/glu.h>         
 	#include <GL/glut.h> 
-#elif
+#else
 	#include <OpenGL/gl.h>           
 	#include <OpenGL/glu.h>         
 	#include <GLUT/glut.h> 
@@ -46,7 +46,7 @@ GLvoid window_mouseFunc(int button, int state, int x, int y);
 GLvoid window_motionFunc(int x, int y);
 
 int main(int argc, char* argv[])
-{
+    {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(400, 400);
