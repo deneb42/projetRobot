@@ -1,20 +1,6 @@
-#ifndef __APPLE__
-	#include <GL/gl.h>
-	#include <GL/glu.h>
-	#include <GL/glut.h>
-#else
-	#include <OpenGL/gl.h>
-	#include <OpenGL/glu.h>
-	#include <GLUT/glut.h>
-#endif
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-
-#include "bmp.h"
-
-#define PI 3.1415926535898
+#include "global.h"
+#include "bender.h"
 
 float angle_z=0;
 float angle_y=0;
@@ -33,11 +19,7 @@ char *chemin;
 
 void init_scene();
 void render_scene();
-void makeBender(char *chemin);
-void drawBender();
 void drawRepere();
-float getCoord(char part, char axe, int side, int index);
-void setCoord(char part, char axe, int side, int index, float value);
 
 void makeSky();
 

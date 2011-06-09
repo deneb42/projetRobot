@@ -1,47 +1,5 @@
-#ifndef __APPLE__
-	#include <GL/gl.h>
-	#include <GL/glu.h>
-	#include <GL/glut.h>
-#else
-	#include <OpenGL/gl.h>
-	#include <OpenGL/glu.h>
-	#include <GLUT/glut.h>
-#endif
-
-#include <stdio.h>
-#include <math.h>
-
-#include "bmp.h"
-
-//utils
-#define PI 3.1415926535898
-#define SLICES 20
-#define STACKS 20
-#define NB_TEXTURE 2
-
-//lists
-#define BENDER 2
-#define EYES 3
-#define HAND 4
-#define FOOT 5
-
-//colors
-#define LIGHT_GRAY 0.84, 0.9, 0.95
-#define DARK_GRAY 0.74, 0.8, 0.87
-#define WHITE 0.99, 0.99, 0.82
-#define BLACK 0.04, 0.05, 0.05
-#define BLUE_GRAY 0.6,0.69,0.78
-#define LIGHT_BLACK 0.4, 0.5, 0.5
-
-
-float Bezier4 ( float coor[4] , float t );
-
-void loadTexture(char* chemin, int tex[NB_TEXTURE]);
-void makeBody(int tex[NB_TEXTURE]);
-void makeEyes();
-void makeHand();
-void makeFoot();
-void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float *controlsZ);
+#include "global.h"
+#include "bender.h"
 
 
 float legX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, 0.1, 0.15, 0.2 }};
@@ -96,31 +54,12 @@ float Bezier4 ( float coor[4] , float t )
 	return coor[0]*(1-t)*(1-t)*(1-t) + 3*coor[1]*t*(1-t)*(1-t) + 3*coor[2]*t*t*(1-t) + coor[3]*t*t*t;
 }
 
-void loadTexture(char* chemin, int tex[NB_TEXTURE])
-{
-	int i;
-	char lulz[150];
-
-	char nomTextures[NB_TEXTURE][50] = {"ventreBender.bmp", "jackObender.bmp"};
-
-	for(i=0;i<NB_TEXTURE;i++)
-	{
-		sprintf(lulz, "%stextures/%s", chemin, nomTextures[i]);
-
-		if (!(tex[i] = loadBMPTexture(lulz) ))
-		{
-			printf("Impossible de charger la texture '%s'\n", nomTextures[i]);
-			exit(EXIT_FAILURE);
-		}
-		else
-			printf("loading : %s\n", lulz);
-	}
-}
-
 void makeBender(char *chemin)
 {
-	int tex[NB_TEXTURE];
-	loadTexture(chemin, tex);
+	int tex[2];
+	
+	loadTexture(chemin, "ventreBender.bmp",  &tex[0]);
+	loadTexture(chemin, "jackObender.bmp",  &tex[1]);
 
 	makeBody(tex);
 	makeEyes();
