@@ -11,7 +11,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <math.h>
-#include "shapes.c"
+#include <string.h>
 
 // Functions
 void initControls();
@@ -21,9 +21,9 @@ void processCameraChange();
 double* getDirectionToLeft();
 
 void render_scene();
-
 GLvoid window_display();
 GLvoid window_reshape(GLsizei width, GLsizei height);
+
 GLvoid window_key(unsigned char key, int x, int y);
 GLvoid window_key_up(unsigned char key, int x, int y);
 GLvoid window_mouseFunc(int button, int state, int x, int y);

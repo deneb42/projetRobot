@@ -1,5 +1,6 @@
 #include "moteur.h"
-
+#include "collisions.h"
+#define NBROBOTS 2
 float angle_z=0;
 float angle_y=0;
 float angle_x=0;
@@ -9,6 +10,8 @@ float posi_z=0;
 float zoom=5;
 int mouse_pos_x = 0, mouse_pos_y = 0;
 short mouse_down_is_left = 0;
+
+char *chemin;
 
 // Controls
 int ARROW_UP = 0;
@@ -25,14 +28,19 @@ double theta;
 double sensitivity = .5;
 double cameraSpeed = .2;
 int cameraKeys[4];
+int follows;
 
 // Robot
-double position[3];
-double direction[3];
-double angle;
+double position[NBROBOTS][3];
+double direction[NBROBOTS][3];
+double angle[NBROBOTS];
 
+// Shapes
+int My_Square;
+int My_Cube;
 int main(int argc, char* argv[])
 {
+	int i;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(400, 400);
@@ -58,11 +66,22 @@ int main(int argc, char* argv[])
 
 	initControls();
 	initCamera();
-	// end of ours initializations
+	// end of the initializations
+	chemin = (char*)malloc(100);
+	chemin[0]='\0';
+	strcat(chemin, argv[0]);
+	for(i=99;i>=0;i--)
+	{
+		if(chemin[i]=='/' || chemin[i]=='\\')
+		{
+			chemin[i+1]='\0';
+			i=-1;
+		}
+	}
 
 	//--------------------------------------------------------------------------- HERE 1-------<<<
-	make_square();
-	make_cube();
+	makeBender(chemin);
+	free(chemin);
 
 	//-----------------------------------------------------------------------------------------<<<
 
@@ -77,12 +96,16 @@ void initControls()
 	for(i=0; i<4; i++)
 	{
 		arrowKeys[i] = 0;
-		position[i] = 0;
 	}
-	direction[0] = 1.0;
-	direction[1] = 0.0;
-	direction[2] = 0.0;
-	angle = 0.0;
+	for (i=0; i<NBROBOTS; i++) {
+		position[i][0] = 0+i*5;
+		position[i][1] = 0+i*5;
+		position[i][2] = 0;
+		direction[i][0] = 1.0;
+		direction[i][1] = 0.0;
+		direction[i][2] = 0.0;
+		angle[i] = 0.0;
+	}
 }
 
 void initCamera()
@@ -94,6 +117,7 @@ void initCamera()
 	cameraPosition[0] = 0;
 	cameraPosition[1] = 2;
 	cameraPosition[2] = 5;
+	follows = NBROBOTS;
 
 	phi = -20;
 	theta = -90;
@@ -102,6 +126,7 @@ void initCamera()
 
 void render_scene()
 {
+	int i;
 	// ------------------------------------------------------------------------- HERE 2-------<<<
 	glRotatef(-90, 1,0,0);
 
@@ -110,21 +135,17 @@ void render_scene()
 	drawRepere();
 
 	// -------------------------------------------------------------------------- HERE 3-------<<<
-	// Cube
-	glPushMatrix();
-	glTranslatef(position[0], position[1], position[2]);
-	glRotatef(angle * 180.0 / M_PI, 0, 0, 1);
-	glCallList(My_Cube);
-	glPopMatrix();
-
-	// Sphere showing the direction of the robot.
-	glPushMatrix();
-	glColor3f(1.0, 1.0, 1.0);
-	glTranslatef(position[0] + direction[0],
-				 position[1] + direction[1],
-				 position[2]);
-	glutSolidSphere(0.2, 50, 50);
-	glPopMatrix();
+	// Robot
+	for(i=0; i<NBROBOTS; i++) {
+		glPushMatrix();
+		glTranslatef(position[i][0], position[i][1], position[i][2]);
+		glRotatef((angle[i]+1.5) * 180.0 / M_PI, 0, 0, 1);
+		if (i == follows)
+			drawBender(100);
+		else
+			drawBender(30);
+		glPopMatrix();
+	}
 
 	//-----------------------------------------------------------------------------------------<<<
 
@@ -165,6 +186,9 @@ GLvoid window_key(unsigned char key, int x, int y)
 			break;
 		case 'd':
 			cameraKeys[ARROW_RIGHT] = 1;
+			break;
+		case 'c':
+			follows = (follows+1)%(NBROBOTS+1);
 			break;
 		case ' ':
 			exit(1);
@@ -213,15 +237,15 @@ GLvoid window_mouseFunc(int button, int state, int x, int y)
 
 GLvoid window_motionFunc(int x, int y)
 {
-	if( !mouse_down_is_left )
-		return;
-
-	theta += (x - mouse_pos_x)*sensitivity;
-	phi -= (y - mouse_pos_y)*sensitivity;
-	mouse_pos_x = x;
-	mouse_pos_y = y;
-	processCameraChange();
-	glutPostRedisplay();
+	if (follows == NBROBOTS)
+	{
+		theta += (x - mouse_pos_x)*sensitivity;
+		phi -= (y - mouse_pos_y)*sensitivity;
+		mouse_pos_x = x;
+		mouse_pos_y = y;
+		processCameraChange();
+		glutPostRedisplay();
+	}
 }
 
 void window_specialDownFunc(int key, int x, int y)
@@ -266,47 +290,96 @@ void window_specialUpFunc(int key, int x, int y) {
 
 GLvoid window_timer()
 {
-  int i;
+  int i, robotIndex=0;
   double speed[] = {.5, .5, .5};
   double rotation[] = {1.0, 0.0, 1.0};
   double angleIncrement = 1.0/18.0;
-  glutTimerFunc(40,&window_timer,0);
   double* leftDirection;
+  double tempPosition[3];
+  int collision;
+  Object *bender, *object;
+
+  glutTimerFunc(40,&window_timer,0);
 
 	// Robot control
-  if (arrowKeys[ARROW_LEFT] && !arrowKeys[ARROW_RIGHT])
+  for(robotIndex=0; robotIndex<NBROBOTS; robotIndex++)
   {
-  	// Turn left
-	angle += angleIncrement;
-	if (angle>= M_PI)
-		angle -= 2*M_PI;
-	direction[0] = cos (angle);
-	direction[1] = sin (angle);
-  }
-  else if (arrowKeys[ARROW_RIGHT] && !arrowKeys[ARROW_LEFT])
-  {
-	// Turn right
-	angle -= angleIncrement;
-	if (angle < -M_PI)
-		angle += 2*M_PI;
-	direction[0] = cos (angle);
-	direction[1] = sin (angle);
-  }
+	if (robotIndex == follows)
+	{
+	  if (arrowKeys[ARROW_LEFT] && !arrowKeys[ARROW_RIGHT])
+	  {
+		// Turn left
+		angle[robotIndex] += angleIncrement;
+		if (angle[robotIndex]>= M_PI)
+			angle[robotIndex] -= 2*M_PI;
+		direction[robotIndex][0] = cos (angle[robotIndex]);
+		direction[robotIndex][1] = sin (angle[robotIndex]);
+	  }
+	  else if (arrowKeys[ARROW_RIGHT] && !arrowKeys[ARROW_LEFT])
+	  {
+		// Turn right
+		angle[robotIndex] -= angleIncrement;
+		if (angle[robotIndex] < -M_PI)
+			angle[robotIndex] += 2*M_PI;
+		direction[robotIndex][0] = cos (angle[robotIndex]);
+		direction[robotIndex][1] = sin (angle[robotIndex]);
+	  }
 
-  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN])
-  {
-	// Move forward
-	position[0] += speed[0]*direction[0];
-	position[1] += speed[1]*direction[1];
-  }
+	  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN])
+	  {
+		// Move forward
+		i=0;
+		collision = 0;
+		tempPosition[0] = position[robotIndex][0] + speed[0]*direction[robotIndex][0];
+		tempPosition[1] = position[robotIndex][1] + speed[1]*direction[robotIndex][1];
 
-  else if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP])
-  {
-	// Move backward
-	position[0] -= speed[0]*direction[0] / 2;
-	position[1] -= speed[1]*direction[1] / 2;
-  }
+		bender = getBender(tempPosition);
+		for(i = 0; i<NBROBOTS && collision == 0; i++)
+		{
+			if (i != robotIndex)
+			{
+				object = getBender(position[i]);
+				if (inCollision(bender, object))
+					collision = 1;
+				free(object);
+			}
+		}
+		free(bender);
+		if (collision == 0)
+		{
+			position[robotIndex][0] = tempPosition[0];
+			position[robotIndex][1] = tempPosition[1];
+		}
+	  }
 
+	  else if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP])
+	  {
+		// Move backward
+		i=0;
+		collision = 0;
+		tempPosition[0] = position[robotIndex][0] - speed[0]*direction[robotIndex][0];
+		tempPosition[1] = position[robotIndex][1] - speed[1]*direction[robotIndex][1];
+
+		bender = getBender(tempPosition);
+		for(i = 0; i<NBROBOTS && collision == 0; i++)
+		{
+			if (i != robotIndex)
+			{
+				object = getBender(position[i]);
+				if (inCollision(bender, object))
+					collision = 1;
+				free(object);
+			}
+		}
+		free(bender);
+		if (collision == 0)
+		{
+			position[robotIndex][0] = tempPosition[0];
+			position[robotIndex][1] = tempPosition[1];
+		}
+	  }
+	}
+  }
 
   // Camera control
   if (cameraKeys[ARROW_LEFT] && !cameraKeys[ARROW_RIGHT])
@@ -315,6 +388,7 @@ GLvoid window_timer()
 	leftDirection = getDirectionToLeft();
 	for(i=0; i<3; i++)
 		cameraPosition[i] += leftDirection[i]*cameraSpeed;
+	free(leftDirection);
   }
   else if (cameraKeys[ARROW_RIGHT] && !cameraKeys[ARROW_LEFT])
   {
@@ -322,6 +396,7 @@ GLvoid window_timer()
 	leftDirection = getDirectionToLeft();
 	for(i=0; i<3; i++)
 		cameraPosition[i] -= leftDirection[i]*cameraSpeed;
+	free(leftDirection);
   }
   if (cameraKeys[ARROW_UP] && !cameraKeys[ARROW_DOWN])
   {
@@ -340,29 +415,40 @@ GLvoid window_timer()
 }
 
 
-void processCameraChange() {
+void processCameraChange()
+{
 	double r;
-	if (phi > 89)
-		phi = 89;
-	else if (phi < -89)
-		phi = -89;
-	r = cos(phi*M_PI/180);
-	cameraDirection[0] = r * cos(theta*M_PI/180);
-	cameraDirection[1] = sin(phi*M_PI/180);
-	cameraDirection[2] = r * sin(theta*M_PI/180);
-
-	gluLookAt(cameraPosition[0],
-			  cameraPosition[1],
-			  cameraPosition[2],
-			  cameraPosition[0] + cameraDirection[0],
-			  cameraPosition[1] + cameraDirection[1],
-			  cameraPosition[2] + cameraDirection[2],
-			  0, 1, 0);
+	int i;
+	if (follows != NBROBOTS)
+		gluLookAt(position[follows][0] - 10*direction[follows][0],
+				  10,
+				  - position[follows][1] + 10*direction[follows][1],
+				  position[follows][0],
+				  position[follows][2] + 5,
+				  -position[follows][1],
+				  0, 1, 0);
+	else {
+		if (phi > 89)
+			phi = 89;
+		else if (phi < -89)
+			phi = -89;
+		r = cos(phi*M_PI/180);
+		cameraDirection[0] = r * cos(theta*M_PI/180);
+		cameraDirection[1] = sin(phi*M_PI/180);
+		cameraDirection[2] = r * sin(theta*M_PI/180);
+		gluLookAt(cameraPosition[0],
+				  cameraPosition[1],
+				  cameraPosition[2],
+				  cameraPosition[0] + cameraDirection[0],
+				  cameraPosition[1] + cameraDirection[1],
+				  cameraPosition[2] + cameraDirection[2],
+				  0, 1, 0);
+	}
 }
 
 double* getDirectionToLeft() {
 	double up[3] = {0, 1, 0};
-	double left[3];
+	double* left = (double*) malloc(sizeof(double) * 3);
 	double norme=0;
 	int i;
 	left[0] = up[1]*cameraDirection[2] - up[2]*cameraDirection[1];

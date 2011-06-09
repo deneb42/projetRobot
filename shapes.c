@@ -1,8 +1,8 @@
 #include "shapes.h"
 
 // Shapes
-int My_Square;
-int My_Cube;
+int My_Square = 8;
+int My_Cube = 9;
 
 void drawRepere()
 {
@@ -42,7 +42,6 @@ void drawRepere()
 
 void make_square()
 {
-  My_Square = 4;
   glNewList(My_Square, GL_COMPILE);
     glBegin(GL_POLYGON);
       glVertex3f(0, 0, 0);
@@ -55,8 +54,6 @@ void make_square()
 
 void make_cube()
 {
-  My_Cube = 5;
-
   glNewList(My_Cube, GL_COMPILE);
     glTranslatef(-0.5, -0.5, 0.5);
 

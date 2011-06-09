@@ -30,12 +30,12 @@
 
 float Bezier4 ( float coor[4] , float t );
 
-void loadTexture(int tex[NB_TEXTURE]);
+void loadTexture(char* chemin, int tex[NB_TEXTURE]);
 void makeBody(int tex[NB_TEXTURE]);
 void makeEyes();
 void makeHand();
 void makeFoot();
-void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ);
+void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float *controlsZ);
 
 
 float legX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, 0.1, 0.15, 0.2 }};
@@ -48,11 +48,11 @@ float armZ[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, -1.0, -2.0, -2.5 }}; // co
 //0 is right, 1 is left
 
 
-void drawBender()
+void drawBender(int nbSlices)
 {
 	float paddingLeg=0.5, paddingShoulder=1.1, hShoulder=2.2, rShoulder=0.35;
-	int i; 
-	
+	int i;
+
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
@@ -63,14 +63,14 @@ void drawBender()
 		glCallList(BENDER);
 
 		glTranslatef(-paddingLeg,0,0);
-		drawLimb('f', legX[0], legY[0], legZ[0]); //right
+		drawLimb('f', nbSlices, legX[0], legY[0], legZ[0]); //right
 
 		glTranslatef(2*paddingLeg,0,0);
-		drawLimb('f', legX[1], legY[1], legZ[1]); // left
+		drawLimb('f', nbSlices, legX[1], legY[1], legZ[1]); // left
 
 
 		glTranslatef(-paddingLeg, 0, hShoulder); // placing at shoulder's height
-		
+
 		for(i=0;i<2;i++)
 		{
 			glPushMatrix();
@@ -78,39 +78,44 @@ void drawBender()
 				glTranslatef(((i*2)-1)*paddingShoulder, 0, 0); // then placing to the good side of the body, (i*2)-1 gives -1 then 1
 
 				glutSolidSphere(rShoulder, SLICES, STACKS); // drawing shoulder
-				drawLimb('h', armX[i], armY[i], armZ[i]); // arm
+				drawLimb('h', nbSlices, armX[i], armY[i], armZ[i]); // arm
 			glPopMatrix();
 		}
 	glPopMatrix();
 }
 
 
-float Bezier4 ( float coor[4] , float t ) 
+float Bezier4 ( float coor[4] , float t )
 {
 	return coor[0]*(1-t)*(1-t)*(1-t) + 3*coor[1]*t*(1-t)*(1-t) + 3*coor[2]*t*t*(1-t) + coor[3]*t*t*t;
 }
 
-void loadTexture(int tex[NB_TEXTURE]) 
+void loadTexture(char* chemin, int tex[NB_TEXTURE])
 {
 	int i;
-	char nomTextures[NB_TEXTURE][100] = {"textures/ventreBender.bmp", "textures/jackObender.bmp"};
-	
+	char lulz[150];
+
+	char nomTextures[NB_TEXTURE][50] = {"ventreBender.bmp", "jackObender.bmp"};
+
 	for(i=0;i<NB_TEXTURE;i++)
 	{
-		if (!(tex[i] = loadBMPTexture(nomTextures[i]) ))
+		sprintf(lulz, "%stextures/%s", chemin, nomTextures[i]);
+
+		if (!(tex[i] = loadBMPTexture(lulz) ))
 		{
 			printf("Impossible de charger la texture '%s'\n", nomTextures[i]);
 			exit(EXIT_FAILURE);
 		}
+		else
+			printf("loading : %s\n", lulz);
 	}
 }
 
-void makeBender()
+void makeBender(char *chemin)
 {
 	int tex[NB_TEXTURE];
-	
-	loadTexture(tex);
-	
+	loadTexture(chemin, tex);
+
 	makeBody(tex);
 	makeEyes();
 	makeHand();
@@ -122,22 +127,24 @@ void makeBody(int tex[NB_TEXTURE])
 {
 	float innerBody=1, outerBody=1.25, hBody=2.8, hShoulder=0.5, rHead=0.6, hHead=1.2;
 	float innerAnt=0.02, outerAnt=0.05, hAnt=0.5, rBottomAnt=0.1, rTopAnt=0.06;
-	
+
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
 	glNewList(BENDER, GL_COMPILE); //bender body (WO arms and legs)
 		glPushMatrix();
-			
-			glColor3f(1, 1, 1);
+
+			glColor3f(1, 1, 1);//DARK_GRAY);
+
 			gluQuadricTexture(qobj, GLU_TRUE);
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D,tex[0]);
+
 			gluCylinder(qobj, innerBody, outerBody, hBody, SLICES, STACKS); // body
 			glDisable(GL_TEXTURE_2D);
 			gluQuadricTexture(qobj, GLU_FALSE);
-			
+
 			glColor3f(DARK_GRAY);
 			gluDisk(qobj, 0, innerBody, SLICES, STACKS); // shiny metal ass
 
@@ -147,14 +154,14 @@ void makeBody(int tex[NB_TEXTURE])
 
 			glColor3f(1, 1, 1);
 			glTranslatef(0,0,hShoulder);
-			
+
 			gluQuadricTexture(qobj, GLU_TRUE);
 			glEnable(GL_TEXTURE_2D);
 			glBindTexture(GL_TEXTURE_2D,tex[1]);
 			gluCylinder(qobj, rHead, rHead, hHead, SLICES, STACKS); // head
 			glDisable(GL_TEXTURE_2D);
 			gluQuadricTexture(qobj, GLU_FALSE);
-			
+
 			glCallList(EYES); // eyes / glasses
 
 			glColor3f(DARK_GRAY);
@@ -295,7 +302,7 @@ void makeHand()
 		glPushMatrix();
 			glRotatef(180, 1, 0, 0);
 			glColor3f(DARK_GRAY);
-			
+
 			gluCylinder(qobj, innerHand, outerHand, hHand, SLICES, STACKS); // hand
 			glTranslatef(0,0,hHand);
 			gluDisk(qobj, 0, outerHand, SLICES, STACKS); // "palm"
@@ -328,23 +335,23 @@ void makeFoot()
 		glColor3f(DARK_GRAY);
 		glTranslatef(0, 0, -(rFoot-edge));
 		glClipPlane(GL_CLIP_PLANE0, plan);
-		
+
 		glEnable(GL_CLIP_PLANE0);
 			glutSolidSphere(rFoot, SLICES, STACKS);
 		glDisable(GL_CLIP_PLANE0);
-		
+
 		gluDisk(qobj, 0, rFoot, SLICES, STACKS); // foot
 		glTranslatef(0, 0, rFoot-edge); //reinit Position
 	glEndList();
 }
 
 
-void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
+void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float *controlsZ)
 {
 	float olBezX, olBezY, olBezZ;
 	float bezX, bezY, bezZ;
 	float angleYZ, angleXZ;
-	float t, pas = 0.01;
+	float t, pas = 1.0/(float)nbSlices;
 	int n=0;
 
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
@@ -359,7 +366,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 
 		for(t=0+pas;t<1;t+=pas)
 		{
-			if(n%15==2)
+			if(n%(nbSlices/10)==2)
 				glColor3f(LIGHT_BLACK);
 			else
 				glColor3f(BLUE_GRAY); // light black every 15th
@@ -369,12 +376,12 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 				bezX=Bezier4(controlsX, t);
 				bezY=Bezier4(controlsY, t);
 				bezZ=Bezier4(controlsZ, t);// calculation of the new Bezier coeff
-				
+
 				glTranslatef(olBezX, olBezY, olBezZ); //placing at the end of the precedent cylinder
 
 				angleYZ = (180*atan((bezX-olBezX)/(bezZ-olBezZ)))/PI;
 				angleXZ = (180*atan((bezY-olBezY)/(bezZ-olBezZ)))/PI; //calculation of the rotation angle
-	
+
 				if((bezZ-olBezZ)<=0)
 					angleYZ+=180;
 				if((bezZ-olBezZ)<=0)
@@ -392,9 +399,9 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 			olBezY=bezY;
 			olBezZ=bezZ; // keeping old coeffs
 		}
-		
+
 		glTranslatef(olBezX, olBezY, olBezZ);
-		
+
 		if(limb == 'h') //if it's a hand, same rotation than the last cylinder, and calling the HAND list
 		{
 			glRotatef(angleYZ, 0, 1, 0);
@@ -406,7 +413,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 
 	glPopMatrix();
 //*/
-		
+
 	/* ------------------------------------------ DEBUG -----------------------------------------------------
 		// draw the curve from wich the cylinder are extruded
 		glBegin(GL_LINE_STRIP);
@@ -417,7 +424,7 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 		}
 		glEnd();
 		glColor3f(1, 1, 0);
-		
+
 		for(n=0;n<4;n++)
 		{
 			glBegin(GL_LINE_STRIP);
@@ -429,6 +436,6 @@ void drawLimb(char limb, float *controlsX, float *controlsY, float *controlsZ)
 				glVertex3f(controlsX[n], controlsY[n] , controlsZ[n] - 0.1 );
 			glEnd();
 		}
-	
+
 	// -------------------------------------------------------------------------------------------------------*/
 }
