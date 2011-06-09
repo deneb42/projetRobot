@@ -296,8 +296,6 @@ GLvoid window_timer()
   double angleIncrement = 1.0/18.0;
   double* leftDirection;
   double tempPosition[3];
-  int collision;
-  Object *bender, *object;
 
   glutTimerFunc(40,&window_timer,0);
 
@@ -328,24 +326,9 @@ GLvoid window_timer()
 	  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN])
 	  {
 		// Move forward
-		i=0;
-		collision = 0;
 		tempPosition[0] = position[robotIndex][0] + speed[0]*direction[robotIndex][0];
 		tempPosition[1] = position[robotIndex][1] + speed[1]*direction[robotIndex][1];
-
-		bender = getBender(tempPosition);
-		for(i = 0; i<NBROBOTS && collision == 0; i++)
-		{
-			if (i != robotIndex)
-			{
-				object = getBender(position[i]);
-				if (inCollision(bender, object))
-					collision = 1;
-				free(object);
-			}
-		}
-		free(bender);
-		if (collision == 0)
+		if (checkCollision(tempPosition, robotIndex) == 0)
 		{
 			position[robotIndex][0] = tempPosition[0];
 			position[robotIndex][1] = tempPosition[1];
@@ -355,24 +338,9 @@ GLvoid window_timer()
 	  else if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP])
 	  {
 		// Move backward
-		i=0;
-		collision = 0;
 		tempPosition[0] = position[robotIndex][0] - speed[0]*direction[robotIndex][0];
 		tempPosition[1] = position[robotIndex][1] - speed[1]*direction[robotIndex][1];
-
-		bender = getBender(tempPosition);
-		for(i = 0; i<NBROBOTS && collision == 0; i++)
-		{
-			if (i != robotIndex)
-			{
-				object = getBender(position[i]);
-				if (inCollision(bender, object))
-					collision = 1;
-				free(object);
-			}
-		}
-		free(bender);
-		if (collision == 0)
+		if (checkCollision(tempPosition, robotIndex) == 0)
 		{
 			position[robotIndex][0] = tempPosition[0];
 			position[robotIndex][1] = tempPosition[1];
@@ -418,7 +386,6 @@ GLvoid window_timer()
 void processCameraChange()
 {
 	double r;
-	int i;
 	if (follows != NBROBOTS)
 		gluLookAt(position[follows][0] - 10*direction[follows][0],
 				  10,
@@ -463,6 +430,26 @@ double* getDirectionToLeft() {
 }
 
 
+
+int checkCollision(double robotPosition[3], int robotIndex) {
+	int i=0;
+	int collision = 0;
+	Object* bender = getBender(robotPosition);
+	Object* object;
+
+	for(i = 0; i<NBROBOTS && collision == 0; i++)
+	{
+		if (i != robotIndex)
+		{
+			object = getBender(position[i]);
+			if (inCollision(bender, object))
+				collision = 1;
+			free(object);
+		}
+	}
+	free(bender);
+	return collision;
+}
 
 
 
