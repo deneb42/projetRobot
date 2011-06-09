@@ -11,6 +11,7 @@
 #define PI 3.1415926535898
 #define SLICES 20
 #define STACKS 20
+#define NB_TEXTURE 2
 
 //lists
 #define BENDER 2
@@ -28,7 +29,9 @@
 
 
 float Bezier4 ( float coor[4] , float t );
-void makeBody();
+
+void loadTexture(int tex[NB_TEXTURE]);
+void makeBody(int tex[NB_TEXTURE]);
 void makeEyes();
 void makeHand();
 void makeFoot();
@@ -82,32 +85,51 @@ void drawBender()
 }
 
 
-float Bezier4 ( float coor[4] , float t ) {
+float Bezier4 ( float coor[4] , float t )
+{
 	return coor[0]*(1-t)*(1-t)*(1-t) + 3*coor[1]*t*(1-t)*(1-t) + 3*coor[2]*t*t*(1-t) + coor[3]*t*t*t;
 }
 
+void loadTexture(int tex[NB_TEXTURE])
+{
+	int i;
+	char nomTextures[NB_TEXTURE][100] = {"textures/ventreBender.bmp", "textures/jackObender.bmp"};
+
+	for(i=0;i<NB_TEXTURE;i++)
+	{
+		if (!(tex[i] = loadBMPTexture(nomTextures[i]) ))
+		{
+			printf("Impossible de charger la texture '%s'\n", nomTextures[i]);
+			exit(EXIT_FAILURE);
+		}
+	}
+}
 
 void makeBender()
 {
-	makeBody();
+	int tex[NB_TEXTURE];
+
+	loadTexture(tex);
+
+	makeBody(tex);
 	makeEyes();
 	makeHand();
 	makeFoot(); // calling all the lists declarations
 }
 
 
-void makeBody()
+void makeBody(int tex[NB_TEXTURE])
 {
 	float innerBody=1, outerBody=1.25, hBody=2.8, hShoulder=0.5, rHead=0.6, hHead=1.2;
 	float innerAnt=0.02, outerAnt=0.05, hAnt=0.5, rBottomAnt=0.1, rTopAnt=0.06;
 	int texId;
-
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
 
 	glNewList(BENDER, GL_COMPILE); //bender body (WO arms and legs)
 		glPushMatrix();
+
 			glColor3f(1, 1, 1);//DARK_GRAY);
 
 			if ( !(texId = loadBMPTexture("C:/Users/Jeroen/Desktop/projetRobot/textures/sol.bmp"))){
@@ -120,19 +142,25 @@ void makeBody()
 			glBindTexture(GL_TEXTURE_2D,texId);
 
 			gluCylinder(qobj, innerBody, outerBody, hBody, SLICES, STACKS); // body
-
 			glDisable(GL_TEXTURE_2D);
 			gluQuadricTexture(qobj, GLU_FALSE);
 
+			glColor3f(DARK_GRAY);
 			gluDisk(qobj, 0, innerBody, SLICES, STACKS); // shiny metal ass
 
 			glColor3f(LIGHT_GRAY);
 			glTranslatef(0,0,hBody);
 			gluCylinder(qobj, outerBody, rHead, hShoulder, SLICES, STACKS); // shoulders
 
-			glColor3f(DARK_GRAY);
+			glColor3f(1, 1, 1);
 			glTranslatef(0,0,hShoulder);
+
+			gluQuadricTexture(qobj, GLU_TRUE);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,tex[1]);
 			gluCylinder(qobj, rHead, rHead, hHead, SLICES, STACKS); // head
+			glDisable(GL_TEXTURE_2D);
+			gluQuadricTexture(qobj, GLU_FALSE);
 
 			glCallList(EYES); // eyes / glasses
 
