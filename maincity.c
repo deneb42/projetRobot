@@ -47,7 +47,7 @@ GLvoid window_mouseFunc(int button, int state, int x, int y);
 GLvoid window_motionFunc(int x, int y);
 
 int main(int argc, char* argv[])
-{
+    {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(400, 400);
@@ -71,7 +71,7 @@ int main(int argc, char* argv[])
 	//--------------------------------------------------------------------------- HERE 1-------<<<
     
 	createCity();
-	makeBender();
+	/*makeBender();*/
     
 	//-----------------------------------------------------------------------------------------<<<
     
@@ -98,9 +98,11 @@ void render_scene()
     
 	// -------------------------------------------------------------------------- HERE 3-------<<<
 	glCallList(10);
+    glCallList(11);
+    
 	
 	glTranslatef(10, 10, 4);
-	drawBender();
+	/*drawBender();*/
     
 	//-----------------------------------------------------------------------------------------<<<
     
