@@ -1,15 +1,10 @@
 #include "moteur.h"
 #include "collisions.h"
-#define NBROBOTS 2
-float angle_z=0;
-float angle_y=0;
-float angle_x=0;
-float posi_x=0;
-float posi_y=0;
-float posi_z=0;
-float zoom=5;
+#define NBROBOTS 3
+#define TURNING 0
+#define MOVING 1
+
 int mouse_pos_x = 0, mouse_pos_y = 0;
-short mouse_down_is_left = 0;
 
 char *chemin;
 
@@ -19,6 +14,7 @@ int ARROW_DOWN = 1;
 int ARROW_LEFT = 2;
 int ARROW_RIGHT = 3;
 int arrowKeys[4];
+int mouseButton[3];
 
 // Camera
 double cameraPosition[3];
@@ -34,6 +30,12 @@ int follows;
 double position[NBROBOTS][3];
 double direction[NBROBOTS][3];
 double angle[NBROBOTS];
+
+// Robot artificial intelligence
+int action[NBROBOTS]; // Action to be made by the robot, either turning or moving forward.
+clock_t endActionTime[NBROBOTS];	// Time at which the action is to be ended,
+									// at which point a new action will have to be programmed.
+int angleDirection[NBROBOTS]; // Indicates where the robot is turning to, left or right.
 
 // Shapes
 int My_Square;
@@ -93,10 +95,13 @@ int main(int argc, char* argv[])
 void initControls()
 {
 	int i;
+	srand(time(NULL));
+
 	for(i=0; i<4; i++)
-	{
 		arrowKeys[i] = 0;
-	}
+	for(i=0; i<3; i++)
+		mouseButton[i] = 0;
+
 	for (i=0; i<NBROBOTS; i++) {
 		position[i][0] = 0+i*5;
 		position[i][1] = 0+i*5;
@@ -105,6 +110,8 @@ void initControls()
 		direction[i][1] = 0.0;
 		direction[i][2] = 0.0;
 		angle[i] = 0.0;
+		action[NBROBOTS] = 1;
+		endActionTime[NBROBOTS] = clock() - 1000;
 	}
 }
 
@@ -140,10 +147,7 @@ void render_scene()
 		glPushMatrix();
 		glTranslatef(position[i][0], position[i][1], position[i][2]);
 		glRotatef((angle[i]+1.5) * 180.0 / M_PI, 0, 0, 1);
-		if (i == follows)
-			drawBender(100);
-		else
-			drawBender(30);
+		drawBender(100);
 		glPopMatrix();
 	}
 
@@ -221,23 +225,23 @@ GLvoid window_key_up(unsigned char key, int x, int y)
 
 GLvoid window_mouseFunc(int button, int state, int x, int y)
 {
+	mouseButton[button] = (state==GLUT_DOWN) ? 1 : 0;
+
 	if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON)
 	{
 		mouse_pos_x = x;
 		mouse_pos_y = y;
-		mouse_down_is_left = 1;
 		glPushMatrix();
 	 }
 	else
 	{
-		mouse_down_is_left = 0;
 		glPopMatrix();
 	}
 }
 
 GLvoid window_motionFunc(int x, int y)
 {
-	if (follows == NBROBOTS)
+	if (follows == NBROBOTS && mouseButton[0])
 	{
 		theta += (x - mouse_pos_x)*sensitivity;
 		phi -= (y - mouse_pos_y)*sensitivity;
@@ -347,6 +351,40 @@ GLvoid window_timer()
 		}
 	  }
 	}
+	else // The robot is currently not being controlled by the user.
+	{
+		if (endActionTime[robotIndex] < clock()) {
+			// The following action will be finished in 300ms to 2 seconds.
+			endActionTime[robotIndex] = clock() + (rand()%17 + 3) * 100;
+			// We change the robot's action.
+			action[robotIndex] = (action[robotIndex] == TURNING) ? MOVING : TURNING;
+			if (action[robotIndex] == TURNING)
+				angleDirection[robotIndex] = (rand() % 2) * 2 - 1; // -1 or +1
+		}
+		if (action[robotIndex] == TURNING)
+		{
+			angle[robotIndex] += angleIncrement * angleDirection[robotIndex];
+			if (angle[robotIndex]>= M_PI)
+				angle[robotIndex] -= 2*M_PI;
+			else if (angle[robotIndex] < -M_PI)
+				angle[robotIndex] += 2*M_PI;
+			direction[robotIndex][0] = cos (angle[robotIndex]);
+			direction[robotIndex][1] = sin (angle[robotIndex]);
+		}
+		else // action == MOVING
+		{
+			tempPosition[0] = position[robotIndex][0] + speed[0]*direction[robotIndex][0];
+			tempPosition[1] = position[robotIndex][1] + speed[1]*direction[robotIndex][1];
+			if (checkCollision(tempPosition, robotIndex) == 0)
+			{
+				position[robotIndex][0] = tempPosition[0];
+				position[robotIndex][1] = tempPosition[1];
+			}
+			else {
+				endActionTime[robotIndex] = clock() - 1000;
+			}
+		}
+	}
   }
 
   // Camera control
@@ -378,6 +416,14 @@ GLvoid window_timer()
 	// Move backward
 	for (i=0; i<3; i++)
 		cameraPosition[i] -= cameraDirection[i]*cameraSpeed;
+  }
+  if (mouseButton[1] && !mouseButton[2])
+  {
+	cameraPosition[1] -= .5;
+  }
+  if (mouseButton[2] && !mouseButton[1])
+  {
+	cameraPosition[1] += .5;
   }
   glutPostRedisplay();
 }
