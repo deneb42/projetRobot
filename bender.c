@@ -82,7 +82,7 @@ void drawBender()
 	
 	glBegin(GL_LINE_STRIP);
 		glColor3f(1, 0, 0);
-		glVertex3f(y, armX[0][indexNearest], z);
+		glVertex3f(armX[0][indexNearest],y , z);
 		glColor3f(1, 1, 1);
 		glVertex3f(armX[0][indexNearest]-paddingShoulder, armY[0][indexNearest], armZ[0][indexNearest]+hShoulder);
 	glEnd();
@@ -476,12 +476,12 @@ void changePoint(char mode, float y, float z)
 {
 	if(mode=='f')
 	{
-		legX[0][indexNearest]+=y;
+		legY[0][indexNearest]+=y;
 		legZ[0][indexNearest]+=z;
 	}
 	else if(mode=='h')
 	{
-		armX[0][indexNearest]+=y;
+		armY[0][indexNearest]+=y;
 		armZ[0][indexNearest]+=z;
 	}
 }
