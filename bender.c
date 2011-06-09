@@ -366,13 +366,17 @@ void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float
 
 //*
 	glPushMatrix();
-		olBezX=Bezier4(controlsX, 0);
-		olBezY=Bezier4(controlsY, 0);
-		olBezZ=Bezier4(controlsZ, 0); //origin coordinates
+		bezX=Bezier4(controlsX, 0);
+		bezY=Bezier4(controlsY, 0);
+		bezZ=Bezier4(controlsZ, 0); //origin coordinates
 
 		for(t=0+pas;t<1;t+=pas)
 		{
-			if(n%(nbSlices/10)==2)
+			olBezX=bezX;
+			olBezY=bezY;
+			olBezZ=bezZ;// keeping old coeffs
+			
+			if(nbSlices>50 && n%15==2)
 				glColor3f(LIGHT_BLACK);
 			else
 				glColor3f(BLUE_GRAY); // light black every 15th
@@ -401,11 +405,8 @@ void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float
 			glPopMatrix();
 
 			n++;
-			olBezX=bezX;
-			olBezY=bezY;
-			olBezZ=bezZ; // keeping old coeffs
 		}
-
+		
 		glTranslatef(olBezX, olBezY, olBezZ);
 
 		if(limb == 'h') //if it's a hand, same rotation than the last cylinder, and calling the HAND list

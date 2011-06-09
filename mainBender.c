@@ -60,7 +60,7 @@ int main(int argc, char* argv[])
 	glutKeyboardFunc(&window_key);
 	glutMouseFunc(&window_mouseFunc);
 	glutMotionFunc(&window_motionFunc);
-	glutTimerFunc(&window_timer);
+	glutTimerFunc(40, &window_timer, 0);
 	// end of the setting of glut's callback functions
 
 	glShadeModel(GL_SMOOTH);
@@ -311,7 +311,7 @@ void makeSky()
 }
 
 GLvoid window_timer()
-{
+{/*
   int i, robotIndex=0;
   double speed[] = {.5, .5, .5};
   double rotation[] = {1.0, 0.0, 1.0};
@@ -400,5 +400,5 @@ GLvoid window_timer()
 			position[robotIndex][1] = tempPosition[1];
 		}
 	  }
-	}
+	}*/
   }
