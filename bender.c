@@ -48,9 +48,9 @@ float legX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, 0.1, 0.15, 0.2 }};
 float legY[2][4] = {{ 0.0, 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0, 0.0 }};
 float legZ[2][4] = {{ -0.01, -1.0, -2.0, -3.0 }, { -0.01, -1.0, -2.0, -3.0 }}; //control points for legs
 
-float armX[2][4] = {{ 0.0, -1.0, -1.1, -1.2 }, { 0.0, 1.0, 1.1, 1.2 }};
+float armX[2][4] = {{ 0.0, -0.85, -0.825, -0.775 }, { 0.0, 1.0, 1.1, 1.2 }};
 float armY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 }, { 0.0, 0.0, -0.1, -0.15 }};
-float armZ[2][4] = {{ 0.0, -1.0, -2.0, -2.5 }, { 0.0, -1.0, -2.0, -2.5 }}; // control points for arms
+float armZ[2][4] = {{ 0.0, -0.55, -1.675, -2.45 }, { 0.0, -1.0, -2.0, -2.5 }}; // control points for arms
 //0 is right, 1 is left
 
 
@@ -422,7 +422,7 @@ void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float
 //*/
 
 	/* ------------------------------------------ DEBUG -----------------------------------------------------
-		// draw the curve from wich the cylinder are extruded
+		// draw the curve from wich the cylinder are extruded and control points
 		glBegin(GL_LINE_STRIP);
 		glColor3f(0, 1, 1);
 		for(t=0;t<=1;t+=pas)
@@ -446,3 +446,54 @@ void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float
 
 	// -------------------------------------------------------------------------------------------------------*/
 }
+
+float getCoord(char part, char axe, int side, int index)
+{
+	if(part=='h')
+		if(axe=='x')
+			return armX[side][index];
+		else if(axe=='y')
+			return armY[side][index];
+		else if(axe=='z')
+			return armZ[side][index];
+		else
+			exit(EXIT_FAILURE);
+	else if(part=='f')
+		if(axe=='x')
+			return legX[side][index];
+		else if(axe=='y')
+			return legY[side][index];
+		else if(axe=='z')
+			return legZ[side][index];
+		else
+			exit(EXIT_FAILURE);
+	else
+		exit(EXIT_FAILURE);
+}
+
+void setCoord(char part, char axe, int side, int index, float value)
+{
+	//printf("set %c %c %d %d to %f\n", part, axe, side, index, value);
+	
+	if(part=='h')
+		if(axe=='x')
+			armX[side][index]=value;
+		else if(axe=='y')
+			armY[side][index]=value;
+		else if(axe=='z')
+			armZ[side][index]=value;
+		else
+			exit(EXIT_FAILURE);
+	else if(part=='f')
+		if(axe=='x')
+			legX[side][index]=value;
+		else if(axe=='y')
+			legY[side][index]=value;
+		else if(axe=='z')
+			legZ[side][index]=value;
+		else
+			exit(EXIT_FAILURE);
+	else
+		exit(EXIT_FAILURE);
+}
+

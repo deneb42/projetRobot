@@ -14,6 +14,8 @@
 
 #include "bmp.h"
 
+#define PI 3.1415926535898
+
 float angle_z=0;
 float angle_y=0;
 float angle_x=0;
@@ -24,6 +26,8 @@ float zoom=5;
 int mouse_pos_x = 0, mouse_pos_y = 0;
 short mouse_down_is_left = 0;
 
+long increment=0;
+
 char *chemin;
 
 
@@ -32,6 +36,8 @@ void render_scene();
 void makeBender(char *chemin);
 void drawBender();
 void drawRepere();
+float getCoord(char part, char axe, int side, int index);
+void setCoord(char part, char axe, int side, int index, float value);
 
 void makeSky();
 
@@ -101,7 +107,6 @@ void render_scene()
 
 	// ------------------------------------------------------------------------- HERE 2-------<<<
 	glRotatef(-90, 1, 0,0);
-	//glRotatef(90, 0, 0, 1);
 	// ---------------------------------------------------------------------------------------<<<
 
 	glCallList(6);
@@ -111,7 +116,7 @@ void render_scene()
 	drawRepere();
 
 	// -------------------------------------------------------------------------- HERE 3-------<<<
-	drawBender(30);
+	drawBender(100);
 
 	//-----------------------------------------------------------------------------------------<<<
 
@@ -311,94 +316,50 @@ void makeSky()
 }
 
 GLvoid window_timer()
-{/*
-  int i, robotIndex=0;
-  double speed[] = {.5, .5, .5};
-  double rotation[] = {1.0, 0.0, 1.0};
-  double angleIncrement = 1.0/18.0;
-  double* leftDirection;
-  double tempPosition[3];
-  int collision;
-  Object *bender, *object;
+{
+	float Sin = sin(increment*PI/180);
+	float Cos = cos(increment*PI/180);
+	float Sin1P = sin((increment+180)*PI/180);
+	float Cos1P = cos((increment+180)*PI/180);
+	float tmp;
 
-  glutTimerFunc(40,&window_timer,0);
+	glutTimerFunc(40,&window_timer,0);
+	
+	// bras !!!
+	setCoord('h', 'y', 0, 1, -(Sin*0.7));
+	setCoord('h', 'y', 0, 2, -(0.1 + Sin*(0.7+0.1)));
+	setCoord('h', 'y', 0, 3, -(0.15 + Sin*(1.1+0.15)));
+	
+	setCoord('h', 'z', 0, 1, -(0.55 + (Sin<0?-Sin:Sin)*(0.95-0.55)));
+	setCoord('h', 'z', 0, 2, -(1.765 + (Sin<0?-Sin:Sin)*(1.875-1.765)));
+	setCoord('h', 'z', 0, 3, -(2.2 + (Cos<0?-Cos:Cos)*(2.45-2.2)));
+	
+	setCoord('h', 'y', 1, 1, -(Sin1P*0.7));
+	setCoord('h', 'y', 1, 2, -(0.1 + Sin1P*(0.7+0.1)));
+	setCoord('h', 'y', 1, 3, -(0.15 + Sin1P*(1.1+0.15)));
+	
+	setCoord('h', 'z', 1, 1, -(0.55 + (Sin1P<0?-Sin1P:Sin1P)*(0.95-0.55)));
+	setCoord('h', 'z', 1, 2, -(1.765 + (Sin1P<0?-Sin1P:Sin1P)*(1.875-1.765)));
+	setCoord('h', 'z', 1, 3, -(2.2 + (Cos1P<0?-Cos1P:Cos1P)*(2.45-2.2)));
+	
+	// jambes !!!
+	setCoord('f', 'y', 0, 1, (Sin*1.125));
+	setCoord('f', 'y', 0, 2, (Sin*1.2));
+	setCoord('f', 'y', 0, 3, (Sin*1.225));
 
-	// Robot control
-  for(robotIndex=0; robotIndex<NBROBOTS; robotIndex++)
-  {
-	if (robotIndex == follows)
-	{
-	  if (arrowKeys[ARROW_LEFT] && !arrowKeys[ARROW_RIGHT])
-	  {
-		// Turn left
-		angle[robotIndex] += angleIncrement;
-		if (angle[robotIndex]>= M_PI)
-			angle[robotIndex] -= 2*M_PI;
-		direction[robotIndex][0] = cos (angle[robotIndex]);
-		direction[robotIndex][1] = sin (angle[robotIndex]);
-	  }
-	  else if (arrowKeys[ARROW_RIGHT] && !arrowKeys[ARROW_LEFT])
-	  {
-		// Turn right
-		angle[robotIndex] -= angleIncrement;
-		if (angle[robotIndex] < -M_PI)
-			angle[robotIndex] += 2*M_PI;
-		direction[robotIndex][0] = cos (angle[robotIndex]);
-		direction[robotIndex][1] = sin (angle[robotIndex]);
-	  }
+	setCoord('f', 'z', 0, 2, -(1.8 + Cos*(2-1.8)));
+	tmp = -(2.675+(3.3-2.85) + Cos*(3.5-2.675));
+	setCoord('f', 'z', 0, 3, tmp<-3 ? -3:tmp);
+	
+	setCoord('f', 'y', 1, 1, (Sin1P*1.125));
+	setCoord('f', 'y', 1, 2, (Sin1P*1.2));
+	setCoord('f', 'y', 1, 3, (Sin1P*1.225));
 
-	  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN])
-	  {
-		// Move forward
-		i=0;
-		collision = 0;
-		tempPosition[0] = position[robotIndex][0] + speed[0]*direction[robotIndex][0];
-		tempPosition[1] = position[robotIndex][1] + speed[1]*direction[robotIndex][1];
-
-		bender = getBender(tempPosition);
-		for(i = 0; i<NBROBOTS && collision == 0; i++)
-		{
-			if (i != robotIndex)
-			{
-				object = getBender(position[i]);
-				if (inCollision(bender, object))
-					collision = 1;
-				free(object);
-			}
-		}
-		free(bender);
-		if (collision == 0)
-		{
-			position[robotIndex][0] = tempPosition[0];
-			position[robotIndex][1] = tempPosition[1];
-		}
-	  }
-
-	  else if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP])
-	  {
-		// Move backward
-		i=0;
-		collision = 0;
-		tempPosition[0] = position[robotIndex][0] - speed[0]*direction[robotIndex][0];
-		tempPosition[1] = position[robotIndex][1] - speed[1]*direction[robotIndex][1];
-
-		bender = getBender(tempPosition);
-		for(i = 0; i<NBROBOTS && collision == 0; i++)
-		{
-			if (i != robotIndex)
-			{
-				object = getBender(position[i]);
-				if (inCollision(bender, object))
-					collision = 1;
-				free(object);
-			}
-		}
-		free(bender);
-		if (collision == 0)
-		{
-			position[robotIndex][0] = tempPosition[0];
-			position[robotIndex][1] = tempPosition[1];
-		}
-	  }
-	}*/
-  }
+	setCoord('f', 'z', 1, 2, -(1.8 + Cos1P*(2-1.8)));
+	tmp = -(2.675+(3.3-2.85) + Cos1P*(3.5-2.675));
+	setCoord('f', 'z', 1, 3, tmp<-3 ? -3:tmp);
+	
+	glutPostRedisplay();
+	
+	if(increment<360) increment+=6; else increment=0; // on peut se permettre car elles sont 360 periodiques
+}
