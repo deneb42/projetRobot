@@ -11,6 +11,8 @@ float zoom=5;
 int mouse_pos_x = 0, mouse_pos_y = 0;
 short mouse_down_is_left = 0;
 
+char *chemin;
+
 // Controls
 int ARROW_UP = 0;
 int ARROW_DOWN = 1;
@@ -38,6 +40,7 @@ int My_Square;
 int My_Cube;
 int main(int argc, char* argv[])
 {
+	int i;
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(400, 400);
@@ -63,10 +66,22 @@ int main(int argc, char* argv[])
 
 	initControls();
 	initCamera();
-	// end of ours initializations
+	// end of the initializations
+	chemin = (char*)malloc(100);
+	chemin[0]='\0';
+	strcat(chemin, argv[0]);
+	for(i=99;i>=0;i--)
+	{
+		if(chemin[i]=='/' || chemin[i]=='\\')
+		{
+			chemin[i+1]='\0';
+			i=-1;
+		}
+	}
 
 	//--------------------------------------------------------------------------- HERE 1-------<<<
-	makeBender();
+	makeBender(chemin);
+	free(chemin);
 
 	//-----------------------------------------------------------------------------------------<<<
 
@@ -125,7 +140,10 @@ void render_scene()
 		glPushMatrix();
 		glTranslatef(position[i][0], position[i][1], position[i][2]);
 		glRotatef((angle[i]+1.5) * 180.0 / M_PI, 0, 0, 1);
-		drawBender();
+		if (i == follows)
+			drawBender(100);
+		else
+			drawBender(30);
 		glPopMatrix();
 	}
 
@@ -310,8 +328,6 @@ GLvoid window_timer()
 	  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN])
 	  {
 		// Move forward
-		//printf("collision : ");
-
 		i=0;
 		collision = 0;
 		tempPosition[0] = position[robotIndex][0] + speed[0]*direction[robotIndex][0];
@@ -331,16 +347,36 @@ GLvoid window_timer()
 		free(bender);
 		if (collision == 0)
 		{
-			position[robotIndex][0] += speed[0]*direction[robotIndex][0];
-			position[robotIndex][1] += speed[1]*direction[robotIndex][1];
+			position[robotIndex][0] = tempPosition[0];
+			position[robotIndex][1] = tempPosition[1];
 		}
 	  }
 
 	  else if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP])
 	  {
 		// Move backward
-		position[robotIndex][0] -= speed[0]*direction[robotIndex][0];
-		position[robotIndex][1] -= speed[1]*direction[robotIndex][1];
+		i=0;
+		collision = 0;
+		tempPosition[0] = position[robotIndex][0] - speed[0]*direction[robotIndex][0];
+		tempPosition[1] = position[robotIndex][1] - speed[1]*direction[robotIndex][1];
+
+		bender = getBender(tempPosition);
+		for(i = 0; i<NBROBOTS && collision == 0; i++)
+		{
+			if (i != robotIndex)
+			{
+				object = getBender(position[i]);
+				if (inCollision(bender, object))
+					collision = 1;
+				free(object);
+			}
+		}
+		free(bender);
+		if (collision == 0)
+		{
+			position[robotIndex][0] = tempPosition[0];
+			position[robotIndex][1] = tempPosition[1];
+		}
 	  }
 	}
   }
