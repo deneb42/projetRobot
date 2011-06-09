@@ -356,7 +356,7 @@ GLvoid window_timer()
 	setCoord('f', 'y', 1, 3, (Sin1P*1.225));
 
 	setCoord('f', 'z', 1, 2, -(1.8 + Cos1P*(2-1.8)));
-	tmp = -(2.675+(3.3-2.85) + Cos1P*(3.5-2.675));
+	tmp = -(2.675+(3.3-2.85) + Cos1P*(3.5-2.675)); //3.3-2.85 valeur trouvée pour faire que le pied heurte le sol quand il ne va plus en avant
 	setCoord('f', 'z', 1, 3, tmp<-3 ? -3:tmp);
 	
 	glutPostRedisplay();
