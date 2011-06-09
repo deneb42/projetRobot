@@ -40,6 +40,7 @@ GLvoid window_reshape(GLsizei width, GLsizei height);
 GLvoid window_key(unsigned char key, int x, int y);
 GLvoid window_mouseFunc(int button, int state, int x, int y);
 GLvoid window_motionFunc(int x, int y);
+GLvoid window_timer();
 
 int main(int argc, char* argv[])
 {
@@ -59,6 +60,7 @@ int main(int argc, char* argv[])
 	glutKeyboardFunc(&window_key);
 	glutMouseFunc(&window_mouseFunc);
 	glutMotionFunc(&window_motionFunc);
+	glutTimerFunc(&window_timer);
 	// end of the setting of glut's callback functions
 
 	glShadeModel(GL_SMOOTH);
@@ -307,3 +309,96 @@ void makeSky()
 		glPopMatrix();
 	glEndList();
 }
+
+GLvoid window_timer()
+{
+  int i, robotIndex=0;
+  double speed[] = {.5, .5, .5};
+  double rotation[] = {1.0, 0.0, 1.0};
+  double angleIncrement = 1.0/18.0;
+  double* leftDirection;
+  double tempPosition[3];
+  int collision;
+  Object *bender, *object;
+
+  glutTimerFunc(40,&window_timer,0);
+
+	// Robot control
+  for(robotIndex=0; robotIndex<NBROBOTS; robotIndex++)
+  {
+	if (robotIndex == follows)
+	{
+	  if (arrowKeys[ARROW_LEFT] && !arrowKeys[ARROW_RIGHT])
+	  {
+		// Turn left
+		angle[robotIndex] += angleIncrement;
+		if (angle[robotIndex]>= M_PI)
+			angle[robotIndex] -= 2*M_PI;
+		direction[robotIndex][0] = cos (angle[robotIndex]);
+		direction[robotIndex][1] = sin (angle[robotIndex]);
+	  }
+	  else if (arrowKeys[ARROW_RIGHT] && !arrowKeys[ARROW_LEFT])
+	  {
+		// Turn right
+		angle[robotIndex] -= angleIncrement;
+		if (angle[robotIndex] < -M_PI)
+			angle[robotIndex] += 2*M_PI;
+		direction[robotIndex][0] = cos (angle[robotIndex]);
+		direction[robotIndex][1] = sin (angle[robotIndex]);
+	  }
+
+	  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN])
+	  {
+		// Move forward
+		i=0;
+		collision = 0;
+		tempPosition[0] = position[robotIndex][0] + speed[0]*direction[robotIndex][0];
+		tempPosition[1] = position[robotIndex][1] + speed[1]*direction[robotIndex][1];
+
+		bender = getBender(tempPosition);
+		for(i = 0; i<NBROBOTS && collision == 0; i++)
+		{
+			if (i != robotIndex)
+			{
+				object = getBender(position[i]);
+				if (inCollision(bender, object))
+					collision = 1;
+				free(object);
+			}
+		}
+		free(bender);
+		if (collision == 0)
+		{
+			position[robotIndex][0] = tempPosition[0];
+			position[robotIndex][1] = tempPosition[1];
+		}
+	  }
+
+	  else if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP])
+	  {
+		// Move backward
+		i=0;
+		collision = 0;
+		tempPosition[0] = position[robotIndex][0] - speed[0]*direction[robotIndex][0];
+		tempPosition[1] = position[robotIndex][1] - speed[1]*direction[robotIndex][1];
+
+		bender = getBender(tempPosition);
+		for(i = 0; i<NBROBOTS && collision == 0; i++)
+		{
+			if (i != robotIndex)
+			{
+				object = getBender(position[i]);
+				if (inCollision(bender, object))
+					collision = 1;
+				free(object);
+			}
+		}
+		free(bender);
+		if (collision == 0)
+		{
+			position[robotIndex][0] = tempPosition[0];
+			position[robotIndex][1] = tempPosition[1];
+		}
+	  }
+	}
+  }
