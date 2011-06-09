@@ -1,6 +1,12 @@
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
+#ifndef __APPLE__
+	#include <GL/gl.h>
+	#include <GL/glu.h>
+	#include <GL/glut.h>
+#else
+	#include <OpenGL/gl.h>
+	#include <OpenGL/glu.h>
+	#include <GLUT/glut.h>
+#endif
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -65,8 +71,11 @@ int main(int argc, char* argv[])
 	strcat(chemin, argv[0]);
 	for(i=99;i>=0;i--)
 	{
-		if(chemin[i]=='/')
+		if(chemin[i]=='/' || chemin[i]=='\\')
+		{
 			chemin[i+1]='\0';
+			i=-1;
+		}
 	}
 
 	//--------------------------------------------------------------------------- HERE 1-------<<<
