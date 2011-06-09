@@ -93,7 +93,7 @@ float Bezier4 ( float coor[4] , float t )
 void loadTexture(int tex[NB_TEXTURE])
 {
 	int i;
-	char nomTextures[NB_TEXTURE][100] = {"textures/ventreBender.bmp", "textures/jackObender.bmp"};
+	char nomTextures[NB_TEXTURE][100] = {"C:/Users/Jeroen/Desktop/projetRobot/textures/ventreBender.bmp", "C:/Users/Jeroen/Desktop/projetRobot/textures/jackObender.bmp"};
 
 	for(i=0;i<NB_TEXTURE;i++)
 	{
@@ -122,7 +122,7 @@ void makeBody(int tex[NB_TEXTURE])
 {
 	float innerBody=1, outerBody=1.25, hBody=2.8, hShoulder=0.5, rHead=0.6, hHead=1.2;
 	float innerAnt=0.02, outerAnt=0.05, hAnt=0.5, rBottomAnt=0.1, rTopAnt=0.06;
-	int texId;
+
 	GLUquadricObj* qobj = gluNewQuadric(); // allocation of a quadric description
 	gluQuadricDrawStyle(qobj, GLU_FILL); // quadric is filled
 	gluQuadricNormals(qobj, GLU_SMOOTH); // shadowings are smooth
@@ -132,14 +132,9 @@ void makeBody(int tex[NB_TEXTURE])
 
 			glColor3f(1, 1, 1);//DARK_GRAY);
 
-			if ( !(texId = loadBMPTexture("C:/Users/Jeroen/Desktop/projetRobot/textures/sol.bmp"))){
-				/* Gestion de l'erreur */
-				printf("Impossible de charger la texture 'sol'\n");
-				exit(EXIT_FAILURE);
-			}
 			gluQuadricTexture(qobj, GLU_TRUE);
 			glEnable(GL_TEXTURE_2D);
-			glBindTexture(GL_TEXTURE_2D,texId);
+			glBindTexture(GL_TEXTURE_2D,tex[0]);
 
 			gluCylinder(qobj, innerBody, outerBody, hBody, SLICES, STACKS); // body
 			glDisable(GL_TEXTURE_2D);
