@@ -6,9 +6,9 @@ float startlegX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, 0.1, 0.15, 0.2 }};
 float startlegY[2][4] = {{ 0.0, 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0, 0.0 }};
 float startlegZ[2][4] = {{ -0.01, -1.0, -2.0, -3.0 }, { -0.01, -1.0, -2.0, -3.0 }}; //control points for legs
 
-float startarmX[2][4] = {{ 0.0, -0.85, -0.825, -0.775 }, { 0.0, 1.0, 1.1, 1.2 }};
+float startarmX[2][4] = {{ 0.0, -0.85, -0.825, -0.775 }, { 0.0, 0.85, 0.825, 0.775 }};
 float startarmY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 }, { 0.0, 0.0, -0.1, -0.15 }};
-float startarmZ[2][4] = {{ 0.0, -0.55, -1.675, -2.45 }, { 0.0, -1.0, -2.0, -2.5 }}; // control points for arms
+float startarmZ[2][4] = {{ 0.0, -0.55, -1.675, -2.45 }, { 0.0, -0.55, -1.675, -2.45 }}; // control points for arms
 //0 is right, 1 is left
 
 void drawBender(int nbSlices, Bender* bender)
@@ -413,9 +413,9 @@ void setLegCoords(Bender* bender, char axe, int side, int index, float value)
 		exit(EXIT_FAILURE);
 }
 
-void setAllCoords(Bender* bender)
+void setAllCoords(int boost, Bender* bender)
 {
-	int pas = 15;
+	int pas = 15*boost;
 	float Sin = sin(bender->increment*PI/180);
 	float Cos = cos(bender->increment*PI/180);
 	float Sin1P = sin((bender->increment+180)*PI/180);

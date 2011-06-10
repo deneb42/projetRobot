@@ -50,6 +50,6 @@
 	float Bezier4 ( float coor[4] , float t );
 	void setArmCoords(Bender* bender, char axe, int side, int index, float value);
 	void setLegCoords(Bender* bender, char axe, int side, int index, float value);
-	void setAllCoords(Bender* bender);
+	void setAllCoords(int boost, Bender* bender);
 
 #endif

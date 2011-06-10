@@ -20,6 +20,7 @@ int ARROW_LEFT = 2;
 int ARROW_RIGHT = 3;
 int arrowKeys[4];
 int mouseButton[3];
+int speedBoost = 1;
 
 // Camera
 double cameraPosition[3];
@@ -328,6 +329,7 @@ GLvoid window_motionFunc(int x, int y)
 
 void window_specialDownFunc(int key, int x, int y)
 {
+	speedBoost = (glutGetModifiers() == GLUT_ACTIVE_SHIFT) ? 2 : 1;
 	switch(key)
 	{
 		case GLUT_KEY_UP:
@@ -405,26 +407,26 @@ GLvoid window_timer()
 	  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN])
 	  {
 		// Move forward
-		tempPosition[0] = robot[robotIndex].position[0] + speed[0]*robot[robotIndex].direction[0];
-		tempPosition[1] = robot[robotIndex].position[1] + speed[1]*robot[robotIndex].direction[1];
+		tempPosition[0] = robot[robotIndex].position[0] + speed[0]*robot[robotIndex].direction[0]*speedBoost;
+		tempPosition[1] = robot[robotIndex].position[1] + speed[1]*robot[robotIndex].direction[1]*speedBoost;
 		if (checkCollision(tempPosition, robotIndex) == 0)
 		{
 			robot[robotIndex].position[0] = tempPosition[0];
 			robot[robotIndex].position[1] = tempPosition[1];
-			setAllCoords(robot+robotIndex);
+			setAllCoords(speedBoost, robot+robotIndex);
 		}
 	  }
 
 	  else if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP])
 	  {
 		// Move backward
-		tempPosition[0] = robot[robotIndex].position[0] - speed[0]*robot[robotIndex].direction[0];
-		tempPosition[1] = robot[robotIndex].position[1] - speed[1]*robot[robotIndex].direction[1];
+		tempPosition[0] = robot[robotIndex].position[0] - speed[0]*robot[robotIndex].direction[0]*speedBoost;
+		tempPosition[1] = robot[robotIndex].position[1] - speed[1]*robot[robotIndex].direction[1]*speedBoost;
 		if (checkCollision(tempPosition, robotIndex) == 0)
 		{
 			robot[robotIndex].position[0] = tempPosition[0];
 			robot[robotIndex].position[1] = tempPosition[1];
-			setAllCoords(robot+robotIndex);
+			setAllCoords(speedBoost, robot+robotIndex);
 		}
 	  }
 	}
@@ -456,7 +458,7 @@ GLvoid window_timer()
 			{
 				robot[robotIndex].position[0] = tempPosition[0];
 				robot[robotIndex].position[1] = tempPosition[1];
-				setAllCoords(robot+robotIndex);
+				setAllCoords(speedBoost, robot+robotIndex);
 			}
 			else {
 				robot[robotIndex].endActionTime = clock() - 1000;
@@ -471,7 +473,7 @@ GLvoid window_timer()
   	// Move left
 	leftDirection = getDirectionToLeft();
 	for(i=0; i<3; i++)
-		cameraPosition[i] += leftDirection[i]*cameraSpeed;
+		cameraPosition[i] += leftDirection[i]*cameraSpeed*speedBoost;
 	free(leftDirection);
   }
   else if (cameraKeys[ARROW_RIGHT] && !cameraKeys[ARROW_LEFT])
@@ -479,21 +481,21 @@ GLvoid window_timer()
 	// Move right
 	leftDirection = getDirectionToLeft();
 	for(i=0; i<3; i++)
-		cameraPosition[i] -= leftDirection[i]*cameraSpeed;
+		cameraPosition[i] -= leftDirection[i]*cameraSpeed*speedBoost;
 	free(leftDirection);
   }
   if (cameraKeys[ARROW_UP] && !cameraKeys[ARROW_DOWN])
   {
 	// Move forward
 	for (i=0; i<3; i++)
-		cameraPosition[i] += cameraDirection[i]*cameraSpeed;
+		cameraPosition[i] += cameraDirection[i]*cameraSpeed*speedBoost;
   }
 
   else if (cameraKeys[ARROW_DOWN] && !cameraKeys[ARROW_UP])
   {
 	// Move backward
 	for (i=0; i<3; i++)
-		cameraPosition[i] -= cameraDirection[i]*cameraSpeed;
+		cameraPosition[i] -= cameraDirection[i]*cameraSpeed*speedBoost;
   }
   if (mouseButton[1] && !mouseButton[2])
   {
