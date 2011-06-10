@@ -49,7 +49,6 @@ void drawBender(int nbSlices)
 	glPopMatrix();
 }
 
-
 void makeBender(char *chemin)
 {
 	int tex[2];
