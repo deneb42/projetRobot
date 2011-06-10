@@ -1,5 +1,5 @@
-#include "city.h"
 #include "global.h"
+#include "city.h"
 
 
 //Loader de textures
@@ -16,7 +16,7 @@ void load_textures(char *chemin, int *texId) {
 void makeSky(int tex)
 {
 	// !!! danger approximation
-	glNewList(6, GL_COMPILE);
+	glNewList(SKY, GL_COMPILE);
 		glPushMatrix();
 			glColor3f (1,1,1);
 			glEnable(GL_TEXTURE_2D);
@@ -69,8 +69,6 @@ void makeSky(int tex)
 	glEndList();
 }
 
-
-
 void createCity(char *chemin)
 {
 	int texId[14]; //A créer en même temps que toutes les variables. La taille depend du nombre de textures
@@ -85,12 +83,12 @@ void createCity(char *chemin)
 	// les ombrages, s´il y en a, sont doux
 	gluQuadricNormals(qobj, GLU_SMOOTH);
 
-	load_textures(chemin, texId);
+	load_textures(chemin, texId); // loading textures
 
-	makeSky(texId[13]);
+	makeSky(texId[13]); // creating skybox
 
     //sol
-    glNewList(11, GL_COMPILE);
+    glNewList(SOL, GL_COMPILE);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texId[0]);
 
@@ -110,7 +108,7 @@ void createCity(char *chemin)
 
     //batiment 1
 
-    glNewList(12, GL_COMPILE);
+    glNewList(BAT1, GL_COMPILE);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texId[1]);
 
@@ -163,7 +161,7 @@ void createCity(char *chemin)
 
     //batiment 2
 
-    glNewList(13, GL_COMPILE);
+    glNewList(BAT2, GL_COMPILE);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texId[2]);
 
@@ -216,7 +214,7 @@ void createCity(char *chemin)
 
     //batiment3
 
-    glNewList(14,GL_COMPILE);
+    glNewList(BAT3,GL_COMPILE);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texId[3]);
 
@@ -269,7 +267,7 @@ void createCity(char *chemin)
 
     //batiment 4 conique
 
-    glNewList(15, GL_COMPILE);
+    glNewList(BAT4, GL_COMPILE);
 
     GLUquadricObj* quadric = gluNewQuadric();
     gluQuadricTexture(quadric, GLU_TRUE);
@@ -299,7 +297,7 @@ void createCity(char *chemin)
 
     //batiment 5 avec sphere
 
-    glNewList(16, GL_COMPILE);
+    glNewList(BAT5, GL_COMPILE);
 
     GLUquadricObj* quadric2 = gluNewQuadric();
     gluQuadricTexture(quadric2, GLU_TRUE);
@@ -326,7 +324,7 @@ void createCity(char *chemin)
 
     //batiment 6
 
-    glNewList(17, GL_COMPILE);
+    glNewList(BAT6, GL_COMPILE);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texId[4]);
 
@@ -378,7 +376,7 @@ void createCity(char *chemin)
 
 
     //batiment 7
-    glNewList(18, GL_COMPILE);
+    glNewList(BAT7, GL_COMPILE);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texId[5]);
 
@@ -430,7 +428,7 @@ void createCity(char *chemin)
 
 
     //batiment 8
-    glNewList(18, GL_COMPILE);
+    glNewList(BAT8, GL_COMPILE);
 
     GLUquadricObj* quadric3 = gluNewQuadric();
     gluQuadricTexture(quadric3, GLU_TRUE);
@@ -453,7 +451,7 @@ void createCity(char *chemin)
 
 
     //batiment 9
-    glNewList(19, GL_COMPILE);
+    glNewList(BAT9, GL_COMPILE);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texId[6]);
 
@@ -504,7 +502,7 @@ void createCity(char *chemin)
 
     //batiment 10
 
-    glNewList(20, GL_COMPILE);
+    glNewList(BAT10, GL_COMPILE);
 
     GLUquadricObj* quadric4 = gluNewQuadric();
     gluQuadricTexture(quadric4, GLU_TRUE);
@@ -528,7 +526,7 @@ void createCity(char *chemin)
 
 
     //batiment 11
-    glNewList(21, GL_COMPILE);
+    glNewList(BAT11, GL_COMPILE);
 
     GLUquadricObj* quadric5 = gluNewQuadric();
     gluQuadricTexture(quadric5, GLU_TRUE);
@@ -549,7 +547,7 @@ void createCity(char *chemin)
 
     //batiment 12 sphere
 
-    glNewList(22, GL_COMPILE);
+    glNewList(BAT12, GL_COMPILE);
 
     GLUquadricObj* quadric6 = gluNewQuadric();
     gluQuadricDrawStyle(quadric6, GLU_FILL);
@@ -570,44 +568,22 @@ void createCity(char *chemin)
     glEndList();
 
 
-
-
-
     //city
-	glNewList(10, GL_COMPILE); // declaration de la liste City
+	glNewList(CITY, GL_COMPILE); // declaration de la liste City
 
-	glCallList(6);
-
-    glCallList(11);
-
-    glCallList(12);
-
-    glCallList(13);
-
-    glCallList(14);
-
-    glCallList(15);
-
-    glCallList(16);
-
-    glCallList(17);
-
-    glCallList(18);
-
-    glCallList(19);
-
-    glCallList(20);
-
-    glCallList(21);
-
-    glCallList(22);
-
-
+		glCallList(SKY);
+		glCallList(11);
+		glCallList(12);
+		glCallList(13);
+		glCallList(14);
+		glCallList(15);
+		glCallList(16);
+		glCallList(17);
+		glCallList(18);
+		glCalllist(19);
+		glCallList(20);
+		glCallList(21);
+		glCallList(22);
+		glCallList(23);
 	glEndList();
-
-
 }
-
-
-
-
