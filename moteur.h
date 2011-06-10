@@ -18,6 +18,7 @@
 void initControls();
 void initCamera();
 void init_scene();
+void initBuildings();
 void processCameraChange();
 double* getDirectionToLeft();
 

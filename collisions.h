@@ -27,5 +27,6 @@ int collisionTYPE_BOXTYPE_BOX(Object* a, Object* b);
 int collisionPointRectangle(double x, double z, Object* rect);
 int collisionCircles(Object* a, Object* b);
 Object* getBender(double position[3]);
+Object* getBuilding(double position[3], int buildingType);
 
 #endif

@@ -50,6 +50,13 @@ int collisionTYPE_BOXTYPE_CYLINDER(Object* b, Object* c)
 	double distance;
 	if (b->y > c->y + c->h) return 0;
 	if (b->y + b->h < c->y) return 0;
+	for(i=0; i<2; i++) {
+		printf("x : %f  y : %f  z : %f  h : %f  w : %f  d : %f\n",
+				tempTYPE_BOX[i].x, tempTYPE_BOX[i].y, tempTYPE_BOX[i].z, tempTYPE_BOX[i].h, tempTYPE_BOX[i].w, tempTYPE_BOX[i].d );
+	}
+	printf("x : %f  y : %f  z : %f  h : %f  w : %f  d : %f  r : %f\n\n",
+				b->x, b->y, b->z, b->h, b->w, b->d , b->r);
+
 
 	for(i=0; i<2 && result == 0; i++)
 		result = collisionPointRectangle(c->x, c->z, tempTYPE_BOX+i);
@@ -91,4 +98,86 @@ Object* getBender(double position[3]) {
 	bender->h = 9.16;
 	bender->r = 1.5;
 	return bender;
+}
+
+
+Object* getBuilding(double position[3], int buildingType) {
+	Object* building = (Object*) malloc(sizeof(Object));
+	building->x = position[0];
+	building->y = position[1];
+	building->z = position[2];
+
+	switch (buildingType)
+	{
+		case 11 :
+			building->type = TYPE_BOX;
+			building->w = 10;
+			building->h = 60;
+			building->d = 10;
+			break;
+		case 12 :
+			building->type = TYPE_BOX;
+			building->w = 15;
+			building->h = 90;
+			building->d = 15;
+			break;
+		case 13 :
+			building->type = TYPE_BOX;
+			building->w = 30;
+			building->h = 10;
+			building->d = 30;
+			break;
+		case 14 :
+			building->type = TYPE_CYLINDER;
+			building->h = 100;
+			building->r = 5;
+			break;
+		case 15 :
+			building->type = TYPE_CYLINDER;
+			building->h = 20;
+			building->r = 5;
+			break;
+		case 16 :
+			building->type = TYPE_BOX;
+			building->w = 20;
+			building->h = 70;
+			building->d = 20;
+			break;
+		case 17 :
+			building->type = TYPE_BOX;
+			building->w = 25;
+			building->h = 5;
+			building->d = 25;
+			break;
+		case 18 :
+			building->type = TYPE_CYLINDER;
+			building->h = 90;
+			building->r = 10;
+			break;
+		case 19 :
+			building->type = TYPE_BOX;
+			building->w = 18;
+			building->h = 20;
+			building->d = 18;
+			break;
+		case 20 :
+			building->type = TYPE_CYLINDER;
+			building->h = 10;
+			building->r = 30;
+			break;
+		case 21 :
+			building->type = TYPE_CYLINDER;
+			building->h = 95;
+			building->r = 10;
+			break;
+		case 22 :
+			building->type = TYPE_CYLINDER;
+			building->h = 40;
+			building->d = 20;
+			break;
+		default:
+			break;
+	}
+
+	return building;
 }

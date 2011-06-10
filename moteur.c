@@ -1,6 +1,7 @@
 #include "moteur.h"
 #include "collisions.h"
-#define NBROBOTS 3
+#define NBROBOTS 1
+#define NBBUILDINGS 1
 #define TURNING 0
 #define MOVING 1
 
@@ -31,6 +32,10 @@ double position[NBROBOTS][3];
 double direction[NBROBOTS][3];
 double angle[NBROBOTS];
 
+// Building
+double buildingPosition[NBBUILDINGS][3];
+int buildingType[NBBUILDINGS];
+
 // Robot artificial intelligence
 int action[NBROBOTS]; // Action to be made by the robot, either turning or moving forward.
 clock_t endActionTime[NBROBOTS];	// Time at which the action is to be ended,
@@ -40,6 +45,7 @@ int angleDirection[NBROBOTS]; // Indicates where the robot is turning to, left o
 // Shapes
 int My_Square;
 int My_Cube;
+
 int main(int argc, char* argv[])
 {
 	int i;
@@ -68,6 +74,7 @@ int main(int argc, char* argv[])
 
 	initControls();
 	initCamera();
+	initBuildings();
 	// end of the initializations
 	chemin = (char*)malloc(100);
 	chemin[0]='\0';
@@ -84,7 +91,6 @@ int main(int argc, char* argv[])
 	//--------------------------------------------------------------------------- HERE 1-------<<<
 	makeBender(chemin);
 	free(chemin);
-
 	//-----------------------------------------------------------------------------------------<<<
 
 	glutMainLoop();
@@ -131,6 +137,63 @@ void initCamera()
 	processCameraChange();
 }
 
+void initBuildings() {
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 11;
+	buildingPosition[0][0] = 20;
+	buildingPosition[0][1] = 20;
+	buildingPosition[0][2] = 0;
+}
+
 void render_scene()
 {
 	int i;
@@ -142,7 +205,7 @@ void render_scene()
 	drawRepere();
 
 	// -------------------------------------------------------------------------- HERE 3-------<<<
-	// Robot
+	// Robots
 	for(i=0; i<NBROBOTS; i++) {
 		glPushMatrix();
 		glTranslatef(position[i][0], position[i][1], position[i][2]);
@@ -151,6 +214,13 @@ void render_scene()
 		glPopMatrix();
 	}
 
+	// Buildings
+	for(i=0; i<NBBUILDINGS; i++) {
+		glPushMatrix();
+		glTranslatef(buildingPosition[i][0], buildingPosition[i][1], buildingPosition[i][2]);
+		glCallList(buildingType[i]);
+		glPopMatrix();
+	}
 	//-----------------------------------------------------------------------------------------<<<
 
 	glutSwapBuffers();
@@ -273,7 +343,8 @@ void window_specialDownFunc(int key, int x, int y)
 	}
 }
 
-void window_specialUpFunc(int key, int x, int y) {
+void window_specialUpFunc(int key, int x, int y)
+{
 	switch(key) {
 		case GLUT_KEY_UP:
 			arrowKeys[ARROW_UP] = 0;
@@ -428,7 +499,6 @@ GLvoid window_timer()
   glutPostRedisplay();
 }
 
-
 void processCameraChange()
 {
 	double r;
@@ -459,7 +529,8 @@ void processCameraChange()
 	}
 }
 
-double* getDirectionToLeft() {
+double* getDirectionToLeft()
+{
 	double up[3] = {0, 1, 0};
 	double* left = (double*) malloc(sizeof(double) * 3);
 	double norme=0;
@@ -475,9 +546,8 @@ double* getDirectionToLeft() {
 	return left;
 }
 
-
-
-int checkCollision(double robotPosition[3], int robotIndex) {
+int checkCollision(double robotPosition[3], int robotIndex)
+{
 	int i=0;
 	int collision = 0;
 	Object* bender = getBender(robotPosition);
@@ -492,6 +562,12 @@ int checkCollision(double robotPosition[3], int robotIndex) {
 				collision = 1;
 			free(object);
 		}
+	}
+	for(i = 0; i<NBBUILDINGS && collision == 0; i++)
+	{	object = getBuilding(buildingPosition[i], buildingType[i]);
+		if (inCollision(bender, object))
+			collision = 1;
+		free(object);
 	}
 	free(bender);
 	return collision;
