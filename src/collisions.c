@@ -2,35 +2,41 @@
 #include "collisions.h"
 #define TAILLEBORD 150
 
+// Indicates whether the first Object parameter is colliding with the second one.
+// Returns 1 if it is, or if it is out of the bounds of the map (=colliding with the external walls), 0 otherwise.
+// Both objects are supposed to have the same type (box or cylinder), otherwise 0 may be returned.
 int inCollision(Object* obj1, Object* obj2)
 {
+	// Checks whether the object is out of bounds or not.
 	if (obj1->x < -TAILLEBORD || obj1->x > TAILLEBORD) return 1;
 	if (obj1->z < -TAILLEBORD || obj1->z > TAILLEBORD) return 1;
 
-	if (obj1->type == TYPE_BOX) {
-		if (obj2->type == TYPE_BOX)
-			return collisionTYPE_BOXTYPE_BOX(obj1, obj2);
-		else if (obj1->type == TYPE_CYLINDER)
-			return collisionTYPE_BOXTYPE_CYLINDER(obj1, obj2);
-	}
-	else if (obj1->type == TYPE_CYLINDER)
-	{
-		if (obj2->type == TYPE_BOX)
-			return collisionTYPE_BOXTYPE_CYLINDER(obj2, obj1);
-		else if (obj1->type == TYPE_CYLINDER)
-			return collisionTYPE_CYLINDERTYPE_CYLINDER(obj1, obj2);
-	}
+	// Call the appropriate collision test function
+	if (obj1->type == TYPE_BOX && obj2->type == TYPE_BOX)
+		return collisionBox(obj1, obj2);
+	else if (obj1->type == TYPE_CYLINDER && obj2->type == TYPE_CYLINDER)
+		return collisionCylinder(obj1, obj2);
 	return 0;
 }
 
-int collisionTYPE_CYLINDERTYPE_CYLINDER(Object* a, Object* b)
+// Checks whether the two given cylinder objects are colliding.
+// Returns 1 it hey do, 0 otherwise.
+int collisionCylinder(Object* a, Object* b)
 {
+	double distance;
 	if (a->y > b->y + b->h) return 0;
 	if (a->y + a->h < b->y) return 0;
-	return collisionCircles(a, b);
+	distance = (b->x - a->x)*(b->x - a->x);
+	distance += (b->z - a->z)*(b->z - a->z);
+	distance = sqrt(distance);
+	if (distance <= a->r + b->r)
+		return 1;
+	return 0;
 }
 
-int collisionTYPE_BOXTYPE_BOX(Object* a, Object* b)
+// Checks whether the two given box objects are colliding.
+// Returns 1 it hey do, 0 otherwise.
+int collisionBox(Object* a, Object* b)
 {
 	if (a->x > b->x + b->w) return 0;
 	else if (a->y > b->y + b->h) return 0;
@@ -41,52 +47,13 @@ int collisionTYPE_BOXTYPE_BOX(Object* a, Object* b)
     return 1;
 }
 
-int collisionTYPE_BOXTYPE_CYLINDER(Object* b, Object* c)
-{
-	Object tempTYPE_BOX[2] = {{b->x - c->r, b->y, b->z, b->h, 0, b->w + c->r, b->d},
-							  {b->x, b->y - c->r, b->z, b->h + c->r, 0, b->w, b->d}};
-	Object tempTYPE_CYLINDER[4] = {{b->x, c->y, b->z, c->h, c->r, 0, 0},
-							  {b->x + b->w, c->y, b->z, c->h, c->r, 0, 0},
-							  {b->x, c->y, b->z + b->d, c->h, c->r, 0, 0},
-							  {b->x + b->w, c->y, b->z + b->d, c->h, c->r, 0, 0}};
-	int i, result = 0;
-	double distance;
-	if (b->y > c->y + c->h) return 0;
-	if (b->y + b->h < c->y) return 0;
-
-	for(i=0; i<2 && result == 0; i++)
-		result = collisionPointRectangle(c->x, c->z, tempTYPE_BOX+i);
-	for(i=0; i<4 && result == 0; i++)
-	{
-		distance = (c->x - tempTYPE_CYLINDER[i].x)*(c->x - tempTYPE_CYLINDER[i].x);
-		distance += (c->z - tempTYPE_CYLINDER[i].z)*(c->z - tempTYPE_CYLINDER[i].z);
-		distance = sqrt(distance);
-		result = distance <= c->r;
-	}
-	return result;
-}
-
-int collisionPointRectangle(double x, double z, Object* rect)
-{
-	if (x < rect->x)		   return 0;
-	if (x > rect->x + rect->w) return 0;
-	if (z < rect->z)		   return 0;
-	if (z > rect->z + rect->d) return 0;
-	return 1;
-}
-
-int collisionCircles(Object* a, Object* b)
-{
-	double distance = (b->x - a->x)*(b->x - a->x);
-	distance += (b->z - a->z)*(b->z - a->z);
-	distance = sqrt(distance);
-	if (distance <= a->r + b->r)
-		return 1;
-	return 0;
-}
-
+// Returns the axis-oriented bounding cylinder and box for Bender.
+// Warning : Both of the returned objects and the array itself will need to be freed.
 Object** getBender(double position[3]) {
+	// Allocation of the array
 	Object** bender = (Object**) malloc(2*sizeof(Object*));
+
+	// Bounding box
 	bender[TYPE_BOX] = (Object*) malloc(sizeof(Object));
 	bender[TYPE_BOX]->type = TYPE_BOX;
 	bender[TYPE_BOX]->x = position[0] - 1.5;
@@ -96,6 +63,7 @@ Object** getBender(double position[3]) {
 	bender[TYPE_BOX]->w = 3.0;
 	bender[TYPE_BOX]->d = 3.0;
 
+	// Bounding cylinder
 	bender[TYPE_CYLINDER] = (Object*) malloc(sizeof(Object));
 	bender[TYPE_CYLINDER]->type = TYPE_CYLINDER;
 	bender[TYPE_CYLINDER]->x = position[0];
@@ -107,13 +75,15 @@ Object** getBender(double position[3]) {
 	return bender;
 }
 
-
+// Returns the axis-oriented bounding shape of a building.
+// Warning : The returned object will need to be freed.
 Object* getBuilding(double position[3], int buildingType) {
 	Object* building = (Object*) malloc(sizeof(Object));
 	building->x = position[0];
 	building->y = position[1];
 	building->z = position[2];
 
+	// The bounding box is relative to each building, depending on buildingType.
 	switch (buildingType)
 	{
 		case 11 :

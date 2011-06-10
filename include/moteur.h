@@ -2,12 +2,13 @@
 #define MOTEUR_H
 	#include <string.h>
 
-	// Functions
 	void initControls();
 	void initCamera();
 	void init_scene();
+	void initBuildings();
 	void processCameraChange();
 	double* getDirectionToLeft();
+	int checkCollision(double robotPosition[3], int robotIndex);
 
 	void render_scene();
 	GLvoid window_display();

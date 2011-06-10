@@ -1,8 +1,8 @@
 #ifndef COLLISIONS_H
 #define COLLISIONS_H
 
-	#define TYPE_BOX 0
-	#define TYPE_CYLINDER 1
+	#define TYPE_BOX 0	// Axis-oriented bounding box
+	#define TYPE_CYLINDER 1	// Axis-oriented bounding cylinder
 
 	typedef struct Object Object;
 	struct Object {
@@ -22,11 +22,8 @@
 	};
 
 	int inCollision(Object* obj1, Object* obj2);
-	int collisionTYPE_CYLINDERTYPE_CYLINDER(Object* a, Object* b);
-	int collisionTYPE_BOXTYPE_CYLINDER(Object* b, Object* c);
-	int collisionTYPE_BOXTYPE_BOX(Object* a, Object* b);
-	int collisionPointRectangle(double x, double z, Object* rect);
-	int collisionCircles(Object* a, Object* b);
+	int collisionCylinder(Object* a, Object* b);
+	int collisionBox(Object* a, Object* b);
 	Object** getBender(double position[3]);
 	Object* getBuilding(double position[3], int buildingType);
 
