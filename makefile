@@ -1,23 +1,22 @@
 #|  Makefile for the robot project  |
 #|                                  |
 #|  by :deneb                       |
-#|  last modif : 23/05/11           |
+#|  last modif : 10/06/11           |
 #/__________________________________/
 
 
-LIBPATH =
+INC_PATH = 
+LIB_PATH = 
+PGM_PATH = ./
 LIBRARY = -lglut -lGLU -lGL -lX11
 CFLAGS = -Wall
-LDFALGS = $(LIBPATH) $(LIBRARY)
+LDFALGS = $(LIB_PATH) $(LIBRARY)
 GCC=gcc
 
 # Name of the files (more .o)
-OBJS = mainBender.o bender.o bmp.o
-#OBJS = moteur.o shapes.o collisions.o bender.o bmp.o
-# Path where the bin will be
-PATH_PGM = ./
+OBJS = bmp.o utils.o bender.o city.o shapes.o collisions.o moteur.o
 # Name of the bin
-PGM = TestBender
+PGM = Futurama
 
 
 # For the generic utilisation,
@@ -25,15 +24,15 @@ PGM = TestBender
 # ___________________________________________
 
 all : $(OBJS)
-	$(GCC) -o $(PATH_PGM)$(PGM) $(OBJS) $(LDFALGS)
+	$(GCC) -o $(PGM_PATH)$(PGM) $(OBJS) $(LDFALGS)
 
 # generic method for all the .o
 %.o : %.c
 	$(GCC) $(CFLAGS) $(INC_PATH) -c $<
 
 run :
-	$(PATH_PGM)$(PGM)
+	$(PGM_PATH)$(PGM)
 
 clean :
-	-rm *.o *~ $(PATH_PGM)$(PGM)
+	-rm *.o *~ $(PGM_PATH)$(PGM)
 
