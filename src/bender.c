@@ -1,5 +1,5 @@
-#include "global.h"
-#include "bender.h"
+#include "../include/global.h"
+#include "../include/bender.h"
 
 
 float legX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, 0.1, 0.15, 0.2 }};
@@ -52,7 +52,7 @@ void drawBender(int nbSlices)
 void makeBender(char *chemin)
 {
 	int tex[2];
-	
+
 	loadTexture(chemin, "ventreBender.bmp",  &tex[0]);
 	loadTexture(chemin, "jackObender.bmp",  &tex[1]);
 
@@ -309,7 +309,7 @@ void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float
 			olBezX=bezX;
 			olBezY=bezY;
 			olBezZ=bezZ;// keeping old coeffs
-			
+
 			if(nbSlices>50 && n%15==2)
 				glColor3f(LIGHT_BLACK);
 			else
@@ -340,7 +340,7 @@ void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float
 
 			n++;
 		}
-		
+
 		glTranslatef(olBezX, olBezY, olBezZ);
 
 		if(limb == 'h') //if it's a hand, same rotation than the last cylinder, and calling the HAND list
@@ -353,7 +353,7 @@ void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float
 			glCallList(FOOT);
 
 	glPopMatrix();
-	
+
 	/* ------------------------------------------ DEBUG -----------------------------------------------------
 		// draw the curve from wich the cylinder are extruded and control points
 		glBegin(GL_LINE_STRIP);
@@ -390,7 +390,7 @@ float Bezier4 ( float coor[4] , float t )
 void setArmCoords(char axe, int side, int index, float value)
 {
 	//printf("set arm %c %d %d to %f\n", part, axe, side, index, value);
-	
+
 	if(axe=='x')
 		armX[side][index]=value;
 	else if(axe=='y')
@@ -404,7 +404,7 @@ void setArmCoords(char axe, int side, int index, float value)
 void setLegCoords(char axe, int side, int index, float value)
 {
 	//printf("set leg %c %d %d to %f\n", part, axe, side, index, value);
-	
+
 	if(axe=='x')
 		legX[side][index]=value;
 	else if(axe=='y')
@@ -427,19 +427,19 @@ void setAllCoords(int pas)
 	setArmCoords('y', 0, 1, -(Sin*0.7));
 	setArmCoords('y', 0, 2, -(0.1 + Sin*(0.7+0.1)));
 	setArmCoords('y', 0, 3, -(0.15 + Sin*(1.1+0.15)));
-	
+
 	setArmCoords('z', 0, 1, -(0.55 + (Sin<0?-Sin:Sin)*(0.95-0.55)));
 	setArmCoords('z', 0, 2, -(1.765 + (Sin<0?-Sin:Sin)*(1.875-1.765)));
 	setArmCoords('z', 0, 3, -(2.2 + (Cos<0?-Cos:Cos)*(2.45-2.2)));
-	
+
 	setArmCoords('y', 1, 1, -(Sin1P*0.7));
 	setArmCoords('y', 1, 2, -(0.1 + Sin1P*(0.7+0.1)));
 	setArmCoords('y', 1, 3, -(0.15 + Sin1P*(1.1+0.15)));
-	
+
 	setArmCoords('z', 1, 1, -(0.55 + (Sin1P<0?-Sin1P:Sin1P)*(0.95-0.55)));
 	setArmCoords('z', 1, 2, -(1.765 + (Sin1P<0?-Sin1P:Sin1P)*(1.875-1.765)));
 	setArmCoords('z', 1, 3, -(2.2 + (Cos1P<0?-Cos1P:Cos1P)*(2.45-2.2)));
-	
+
 	// legs -------------------------------------------
 	setLegCoords('y', 0, 1, (Sin*1.125));
 	setLegCoords('y', 0, 2, (Sin*1.2));
@@ -448,7 +448,7 @@ void setAllCoords(int pas)
 	setLegCoords('z', 0, 2, -(1.8 + Cos*(2-1.8)));
 	tmp = -(2.675+(3.3-2.85) + Cos*(3.5-2.675));
 	setLegCoords('z', 0, 3, tmp<-3 ? -3:tmp);
-	
+
 	setLegCoords('y', 1, 1, (Sin1P*1.125));
 	setLegCoords('y', 1, 2, (Sin1P*1.2));
 	setLegCoords('y', 1, 3, (Sin1P*1.225));
@@ -458,9 +458,9 @@ void setAllCoords(int pas)
 	setLegCoords('z', 1, 3, tmp<-3 ? -3:tmp);
 
 
-	if(increment<360) 
-		increment+=pas; 
-	else 
+	if(increment<360)
+		increment+=pas;
+	else
 		increment=0; // on peut se permettre car elles sont 360 periodiques
 }
 

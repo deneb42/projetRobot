@@ -1,5 +1,5 @@
 #include <math.h>
-#include "collisions.h"
+#include "../include/collisions.h"
 
 
 int inCollision(Object* obj1, Object* obj2)

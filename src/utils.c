@@ -1,6 +1,6 @@
 #include <string.h>
 
-#include "bmp.h"
+#include "../include/bmp.h"
 
 
 void loadTexture(char* path, char* name, int *tex)

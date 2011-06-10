@@ -1,6 +1,7 @@
-#include "moteur.h"
-#include "collisions.h"
-#define NBROBOTS 1
+#include "../include/global.h"
+#include "../include/moteur.h"
+#include "../include/collisions.h"
+#define NBROBOTS 3
 #define NBBUILDINGS 12
 #define TURNING 0
 #define MOVING 1
