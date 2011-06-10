@@ -24,7 +24,7 @@ double cameraDirection[3];
 double phi;
 double theta;
 double sensitivity = .5;
-double cameraSpeed = .2;
+double cameraSpeed = 1.0;
 int cameraKeys[4];
 int follows;
 
@@ -140,66 +140,67 @@ void initCamera()
 	processCameraChange();
 }
 
-void initBuildings() {
+void initBuildings()
+{
 	buildingType[0] = 11;
 	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
-	buildingPosition[0][2] = 0;
+	buildingPosition[0][1] = 0;
+	buildingPosition[0][2] = 20;
 
 	buildingType[1] = 12;
 	buildingPosition[1][0] = 30;
-	buildingPosition[1][1] = -90;
-	buildingPosition[1][2] = 0;
+	buildingPosition[1][1] = 0;
+	buildingPosition[1][2] = -90;
 
 	buildingType[2] = 13;
 	buildingPosition[2][0] = 60;
-	buildingPosition[2][1] = 80;
-	buildingPosition[2][2] = 0;
+	buildingPosition[2][1] = 0;
+	buildingPosition[2][2] = 80;
 
 	buildingType[3] = 14;
 	buildingPosition[3][0] = -10;
-	buildingPosition[3][1] = -60;
-	buildingPosition[3][2] = 0;
+	buildingPosition[3][1] = 0;
+	buildingPosition[3][2] = -60;
 
 	buildingType[4] = 15;
 	buildingPosition[4][0] = -15;
-	buildingPosition[4][1] = -15;
-	buildingPosition[4][2] = 0;
+	buildingPosition[4][1] = 0;
+	buildingPosition[4][2] = -15;
 
 	buildingType[5] = 16;
 	buildingPosition[5][0] = -30;
-	buildingPosition[5][1] = 20;
-	buildingPosition[5][2] = 0;
+	buildingPosition[5][1] = 0;
+	buildingPosition[5][2] = 20;
 
 	buildingType[6] = 17;
 	buildingPosition[6][0] = -70;
-	buildingPosition[6][1] = -60;
-	buildingPosition[6][2] = 0;
+	buildingPosition[6][1] = 0;
+	buildingPosition[6][2] = -60;
 
 	buildingType[7] = 18;
 	buildingPosition[7][0] = 100;
-	buildingPosition[7][1] = 50;
-	buildingPosition[7][2] = 0;
+	buildingPosition[7][1] = 0;
+	buildingPosition[7][2] = 50;
 
 	buildingType[8] = 19;
 	buildingPosition[8][0] = -100;
-	buildingPosition[8][1] = -120;
-	buildingPosition[8][2] = 0;
+	buildingPosition[8][1] = 0;
+	buildingPosition[8][2] = -120;
 
 	buildingType[9] = 20;
 	buildingPosition[9][0] = -110;
-	buildingPosition[9][1] = 80;
-	buildingPosition[9][2] = 0;
+	buildingPosition[9][1] = 0;
+	buildingPosition[9][2] = 80;
 
 	buildingType[10] = 21;
 	buildingPosition[10][0] = -110;
-	buildingPosition[10][1] = 80;
-	buildingPosition[10][2] = 0;
+	buildingPosition[10][1] = 0;
+	buildingPosition[10][2] = 80;
 
 	buildingType[11] = 22;
 	buildingPosition[11][0] = -90;
-	buildingPosition[11][1] = -60;
-	buildingPosition[11][2] = 0;
+	buildingPosition[11][1] = 0;
+	buildingPosition[11][2] = -60;
 }
 
 void render_scene()
@@ -563,26 +564,31 @@ int checkCollision(double robotPosition[3], int robotIndex)
 {
 	int i=0;
 	int collision = 0;
-	Object* bender = getBender(robotPosition);
-	Object* object;
+	Object** bender = getBender(robotPosition);
+	Object** otherBender;
+	Object* building;
 
 	for(i = 0; i<NBROBOTS && collision == 0; i++)
 	{
 		if (i != robotIndex)
 		{
-			object = getBender(position[i]);
-			if (inCollision(bender, object))
+			otherBender = getBender(position[i]);
+			if (inCollision(bender[TYPE_CYLINDER], otherBender[TYPE_CYLINDER]))
 				collision = 1;
-			free(object);
+			free(otherBender[0]);
+			free(otherBender[1]);
+			free(otherBender);
 		}
 	}
 	for(i = 0; i<NBBUILDINGS && collision == 0; i++)
 	{
-		object = getBuilding(buildingPosition[i], buildingType[i]);
-		if (inCollision(bender, object))
+		building = getBuilding(buildingPosition[i], buildingType[i]);
+		if (inCollision(bender[building->type], building))
 			collision = 1;
-		free(object);
+		free(building);
 	}
+	free(bender[0]);
+	free(bender[1]);
 	free(bender);
 	return collision;
 }

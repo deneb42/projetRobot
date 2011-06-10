@@ -82,14 +82,25 @@ int collisionCircles(Object* a, Object* b)
 	return 0;
 }
 
-Object* getBender(double position[3]) {
-	Object* bender = (Object*) malloc(sizeof(Object));
-	bender->type = TYPE_CYLINDER;
-	bender->x = position[0];
-	bender->y = position[2];
-	bender->z = position[1];
-	bender->h = 9.16;
-	bender->r = 1.5;
+Object** getBender(double position[3]) {
+	Object** bender = (Object**) malloc(2*sizeof(Object*));
+	bender[TYPE_BOX] = (Object*) malloc(sizeof(Object));
+	bender[TYPE_BOX]->type = TYPE_BOX;
+	bender[TYPE_BOX]->x = position[0] - 1.5;
+	bender[TYPE_BOX]->y = position[2];
+	bender[TYPE_BOX]->z = position[1] - 1.5;
+	bender[TYPE_BOX]->h = 9.16;
+	bender[TYPE_BOX]->w = 3.0;
+	bender[TYPE_BOX]->d = 3.0;
+
+	bender[TYPE_CYLINDER] = (Object*) malloc(sizeof(Object));
+	bender[TYPE_CYLINDER]->type = TYPE_CYLINDER;
+	bender[TYPE_CYLINDER]->x = position[0];
+	bender[TYPE_CYLINDER]->y = position[2];
+	bender[TYPE_CYLINDER]->z = position[1];
+	bender[TYPE_CYLINDER]->h = 9.16;
+	bender[TYPE_CYLINDER]->r = 1.5;
+
 	return bender;
 }
 
