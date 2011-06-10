@@ -8,6 +8,8 @@
 	void init_scene();
 	void processCameraChange();
 	double* getDirectionToLeft();
+	int checkCollision(double robotPosition[3], int robotIndex);
+	void initBuildings();
 
 	void render_scene();
 	GLvoid window_display();

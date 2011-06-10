@@ -426,7 +426,7 @@ GLvoid window_timer()
 		{
 			robot[robotIndex].position[0] = tempPosition[0];
 			robot[robotIndex].position[1] = tempPosition[1];
-			setAllCoords(speedBoost, robot+robotIndex);
+			setAllCoords(-speedBoost, robot+robotIndex);
 		}
 	  }
 	}

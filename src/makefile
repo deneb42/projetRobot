@@ -14,7 +14,7 @@ LDFALGS = $(LIB_PATH) $(LIBRARY)
 GCC=gcc
 
 # Name of the files (more .o)
-OBJS = bmp.o utils.o bender.o city.o shapes.o collisions.o moteur.o
+OBJS = bmp.o utils.o bender.o city.o collisions.o moteur.o
 # Name of the bin
 PGM = Futurama
 
