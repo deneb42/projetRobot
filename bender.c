@@ -1,6 +1,6 @@
-#include <GL/gl.h>
-#include <GL/glu.h>
-#include <GL/glut.h>
+#include <OpenGL/gl.h>
+#include <OpenGL/glu.h>
+#include <GLUT/glut.h>
 
 #include <stdio.h>
 #include <math.h>
@@ -103,7 +103,7 @@ void loadTexture(char* chemin, int tex[NB_TEXTURE])
 
 		if (!(tex[i] = loadBMPTexture(lulz) ))
 		{
-			printf("Impossible de charger la texture '%s'\n", nomTextures[i]);
+			printf("Impossible de charger la texture '%s'\n", lulz);
 			exit(EXIT_FAILURE);
 		}
 		else
