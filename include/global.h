@@ -26,7 +26,7 @@
 	#define EYES 3
 	#define HAND 4
 	#define FOOT 5
-	
+
 	#define CITY 10
 	#define SKY 11
 	#define	FLOOR 12
@@ -42,9 +42,10 @@
 	#define	BAT10 22
 	#define	BAT11 23
 	#define	BAT12 24
-	
+	#define BORD 25
+
 	// utility functions
 	void loadTexture(char* chemin, char* name, int *tex);
 	void drawRepere();
-	
+
 #endif

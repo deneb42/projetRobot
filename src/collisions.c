@@ -1,9 +1,12 @@
 #include "global.h"
 #include "collisions.h"
-
+#define TAILLEBORD 150
 
 int inCollision(Object* obj1, Object* obj2)
 {
+	if (obj1->x < -TAILLEBORD || obj1->x > TAILLEBORD) return 1;
+	if (obj1->z < -TAILLEBORD || obj1->z > TAILLEBORD) return 1;
+
 	if (obj1->type == TYPE_BOX) {
 		if (obj2->type == TYPE_BOX)
 			return collisionTYPE_BOXTYPE_BOX(obj1, obj2);

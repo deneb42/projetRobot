@@ -72,6 +72,7 @@ void makeSky(int tex)
 void createCity(char *chemin)
 {
 	int texId[14]; //A créer en même temps que toutes les variables. La taille depend du nombre de textures
+	int i;
 
 	GLUquadricObj* qobj;
 	//GLUquadricObj* GLAPIENTRY qobj;
@@ -87,6 +88,16 @@ void createCity(char *chemin)
 
 	makeSky(texId[13]); // creating skybox
 
+	glNewList(BORD, GL_COMPILE);
+		glBegin(GL_POLYGON);
+		glTexCoord2i(1,1);		glVertex3f(-150,-150,0);
+		glTexCoord2i(1,0);		glVertex3f(-150,-150,5);
+		glTexCoord2i(0,0);		glVertex3f(150,-150,5);
+		glTexCoord2i(0,1);      glVertex3f(150,-150,0);
+		glEnd();
+	glEndList();
+
+
     //sol
     glNewList(FLOOR, GL_COMPILE);
     glEnable(GL_TEXTURE_2D);
@@ -100,6 +111,13 @@ void createCity(char *chemin)
     glTexCoord2i(0,0);		glVertex3f(-150,-150,0);
     glTexCoord2i(0,1);      glVertex3f(-150,150,0);
     glEnd();
+
+    for(i=0;i<4;i++)
+    {
+    	glRotatef(90, 0, 0, 1);
+    	glCallList(BORD);
+    }
+
     glDisable(GL_TEXTURE_2D);
     glPopMatrix();
     glEndList();
