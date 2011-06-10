@@ -1,89 +1,82 @@
 #include "city.h"
-
-
-void load_textures(void);
-int texId[14]; //A créer en même temps que toutes les variables. La taille depend du nombre de textures
-
+#include "global.h"
 
 
 //Loader de textures
-void load_textures(void) {
-    /* Si le programme n'arrive pas a charger la texture */
-    if ( !(texId[0] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/mars2.bmp"))){
-        /* Gestion de l'erreur */
-        printf("Impossible de charger la texture 'sol'\n");
-        exit(EXIT_FAILURE);
-    }
-    if ( !(texId[1] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/mur1.bmp"))){
-        /* Gestion de l'erreur */
-        printf("Impossible de charger la texture 'mur1'\n");
-        exit(EXIT_FAILURE);
-    }
-    if ( !(texId[2] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/mur2.bmp"))){
-        /* Gestion de l'erreur */
-        printf("Impossible de charger la texture 'mur2'\n");
-        exit(EXIT_FAILURE);
-    }
-    if ( !(texId[3] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/mur3.bmp"))){
-        /* Gestion de l'erreur */
-        printf("Impossible de charger la texture 'mur3'\n");
-        exit(EXIT_FAILURE);
-    }
-    if ( !(texId[4] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/mur4.bmp"))){
-        /* Gestion de l'erreur */
-        printf("Impossible de charger la texture 'mur4'\n");
-        exit(EXIT_FAILURE);
-    }
-    if ( !(texId[5] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/mur5.bmp"))){
-        /* Gestion de l'erreur */
-        printf("Impossible de charger la texture 'mur5'\n");
-        exit(EXIT_FAILURE);
-    }
-    if ( !(texId[6] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/mur6.bmp"))){
-    /* Gestion de l'erreur */
-    printf("Impossible de charger la texture 'mur6'\n");
-    exit(EXIT_FAILURE);
-    }
+void load_textures(char *chemin, int *texId) {
+	int i;
+	
+	char texName[14][20] = {"mars2.bmp", "mur1.bmp", "mur1.bmp", "mur1.bmp", "mur1.bmp", "mur1.bmp", "mur1.bmp",
+						"cyl10.bmp", "cyl11.bmp", "cyl12.bmp", "cyl13.bmp", "cyl14.bmp", "eau2.bmp", "skybox.bmp"};
+	
+	for(i=0;i<14;i++)
+		loadTexture(chemin, texName[i],  &texId[i]);
+}
 
-    if ( !(texId[10] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/cyl10.bmp"))){
-    /* Gestion de l'erreur */
-    printf("Impossible de charger la texture 'cyl10'\n");
-    exit(EXIT_FAILURE);
-    }
-    if ( !(texId[11] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/cyl11.bmp"))){
-    /* Gestion de l'erreur */
-    printf("Impossible de charger la texture 'cyl11'\n");
-    exit(EXIT_FAILURE);
-    }
-    if ( !(texId[12] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/cyl12.bmp"))){
-    /* Gestion de l'erreur */
-    printf("Impossible de charger la texture 'cyl12'\n");
-    exit(EXIT_FAILURE);
-    }
-    if ( !(texId[13] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/cyl13.bmp"))){
-    /* Gestion de l'erreur */
-    printf("Impossible de charger la texture 'cyl13'\n");
-    exit(EXIT_FAILURE);
-    }
-    if ( !(texId[14] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/cyl14.bmp"))){
-    /* Gestion de l'erreur */
-    printf("Impossible de charger la texture 'cyl14'\n");
-    exit(EXIT_FAILURE);
-    }
-    if ( !(texId[15] = loadBMPTexture("C:/Users/Fernando/Dropbox/Sources/OpenGL/RobotWin/textures/eau2.bmp"))){
-    /* Gestion de l'erreur */
-    printf("Impossible de charger la texture 'eau2'\n");
-    exit(EXIT_FAILURE);
-    }
+void makeSky(int tex)
+{
+	// !!! danger approximation
+	glNewList(6, GL_COMPILE);
+		glPushMatrix();
+			glColor3f (1,1,1);
+			glEnable(GL_TEXTURE_2D);
+			glBindTexture(GL_TEXTURE_2D,tex);
+			
+			glBegin(GL_POLYGON);//millieu
+				glTexCoord2f(0.25, 0.65);	glVertex3f(-300,300,300);
+				glTexCoord2f(0.5, 0.65);		glVertex3f(300,300,300);
+				glTexCoord2f(0.5, 0.34);		glVertex3f(300,300,-300);
+				glTexCoord2f(0.25, 0.34);    glVertex3f(-300,300,-300);
+			glEnd();
+			
+			glBegin(GL_POLYGON);//haut
+				glTexCoord2f(0.25, 1);		glVertex3f(-300,-300,300);
+				glTexCoord2f(0.5, 1);		glVertex3f(300,-300,300);
+				glTexCoord2f(0.5, 0.65);		glVertex3f(300,300,300);
+				glTexCoord2f(0.25, 0.65);    glVertex3f(-300,300,300);
+			glEnd();
+			
+			glBegin(GL_POLYGON);//gauche
+				glTexCoord2f(0, 0.65);		glVertex3f(-300,-300,300);
+				glTexCoord2f(0.25, 0.65);		glVertex3f(-300,300,300);
+				glTexCoord2f(0.25, 0.34);		glVertex3f(-300,300,-300);
+				glTexCoord2f(0, 0.34);      glVertex3f(-300,-300,-300);
+			glEnd();
+			
+			glBegin(GL_POLYGON);//bas
+				glTexCoord2f(0.25, 0.34);	glVertex3f(-300,300,-300);
+				glTexCoord2f(0.5, 0.34);		glVertex3f(300,300,-300);
+				glTexCoord2f(0.5, 0);		glVertex3f(300,-300,-300);
+				glTexCoord2f(0.25, 0);      glVertex3f(-300,-300,-300);
+			glEnd();
+			
+			glBegin(GL_POLYGON);//droite
+				glTexCoord2f(0.5, 0.65);		glVertex3f(300,300,300);
+				glTexCoord2f(0.75, 0.65);		glVertex3f(300,-300,300);
+				glTexCoord2f(0.75, 0.34);		glVertex3f(300,-300,-300);
+				glTexCoord2f(0.5, 0.34);      glVertex3f(300,300,-300);
+			glEnd();
+			
+			glBegin(GL_POLYGON);//derrière
+				glTexCoord2f(0.75, 0.65);	glVertex3f(300,-300,300);
+				glTexCoord2f(1, 0.65);		glVertex3f(-300,-300,300);
+				glTexCoord2f(1, 0.34);		glVertex3f(-300,-300,-300);
+				glTexCoord2f(0.75, 0.34);      glVertex3f(300,-300,-300);
+			glEnd();
+				
+			glDisable(GL_TEXTURE_2D);
+		glPopMatrix();
+	glEndList();
 }
 
 
 
-void createCity()
+void createCity(char *chemin)
 {
+	int texId[14]; //A créer en même temps que toutes les variables. La taille depend du nombre de textures
+	
 	GLUquadricObj* qobj;
 	//GLUquadricObj* GLAPIENTRY qobj;
-
 
 	// allocation d´une description de quadrique
 	qobj = gluNewQuadric();
@@ -92,9 +85,9 @@ void createCity()
 	// les ombrages, s´il y en a, sont doux
 	gluQuadricNormals(qobj, GLU_SMOOTH);
 
-	load_textures();
+	load_textures(chemin, texId);
 
-
+	makeSky(texId[13]);
 
     //sol
     glNewList(11, GL_COMPILE);
@@ -582,6 +575,8 @@ void createCity()
 
     //city
 	glNewList(10, GL_COMPILE); // declaration de la liste City
+
+	glCallList(6);
 
     glCallList(11);
 
