@@ -1,20 +1,7 @@
 #ifndef DEF_BMP
 #define DEF_BMP
 
-#ifndef __APPLE__
-	#include <GL/gl.h>           
-	#include <GL/glu.h>         
-	#include <GL/glut.h> 
-#else
-	#include <OpenGL/gl.h>           
-	#include <OpenGL/glu.h>         
-	#include <GLUT/glut.h> 
-#endif
-
-    #include <stdio.h>
-    #include <stdlib.h>
-    #include <math.h>
-    #include <string.h>
+	#include "global.h"
 
     /* OpenGL texture info */
     typedef struct
