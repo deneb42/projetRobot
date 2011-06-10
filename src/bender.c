@@ -1,19 +1,17 @@
-#include "../include/global.h"
-#include "../include/bender.h"
+#include "global.h"
+#include "bender.h"
 
 
-float legX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, 0.1, 0.15, 0.2 }};
-float legY[2][4] = {{ 0.0, 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0, 0.0 }};
-float legZ[2][4] = {{ -0.01, -1.0, -2.0, -3.0 }, { -0.01, -1.0, -2.0, -3.0 }}; //control points for legs
+float startlegX[2][4] = {{ 0.0, -0.1, -0.15, -0.2 }, { 0.0, 0.1, 0.15, 0.2 }};
+float startlegY[2][4] = {{ 0.0, 0.0, 0.0, 0.0 }, { 0.0, 0.0, 0.0, 0.0 }};
+float startlegZ[2][4] = {{ -0.01, -1.0, -2.0, -3.0 }, { -0.01, -1.0, -2.0, -3.0 }}; //control points for legs
 
-float armX[2][4] = {{ 0.0, -0.85, -0.825, -0.775 }, { 0.0, 1.0, 1.1, 1.2 }};
-float armY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 }, { 0.0, 0.0, -0.1, -0.15 }};
-float armZ[2][4] = {{ 0.0, -0.55, -1.675, -2.45 }, { 0.0, -1.0, -2.0, -2.5 }}; // control points for arms
+float startarmX[2][4] = {{ 0.0, -0.85, -0.825, -0.775 }, { 0.0, 1.0, 1.1, 1.2 }};
+float startarmY[2][4] = {{ 0.0, 0.0, -0.1, -0.15 }, { 0.0, 0.0, -0.1, -0.15 }};
+float startarmZ[2][4] = {{ 0.0, -0.55, -1.675, -2.45 }, { 0.0, -1.0, -2.0, -2.5 }}; // control points for arms
 //0 is right, 1 is left
 
-int increment = 0; // variable cyclique qui permet l'animation
-
-void drawBender(int nbSlices)
+void drawBender(int nbSlices, Bender* bender)
 {
 	float paddingLeg=0.5, paddingShoulder=1.1, hShoulder=2.2, rShoulder=0.35;
 	int i;
@@ -28,10 +26,10 @@ void drawBender(int nbSlices)
 		glCallList(BENDER);
 
 		glTranslatef(-paddingLeg,0,0);
-		drawLimb('f', nbSlices, legX[0], legY[0], legZ[0]); //right
+		drawLimb('f', nbSlices, bender->legX[0], bender->legY[0], bender->legZ[0]); //right
 
 		glTranslatef(2*paddingLeg,0,0);
-		drawLimb('f', nbSlices, legX[1], legY[1], legZ[1]); // left
+		drawLimb('f', nbSlices, bender->legX[1], bender->legY[1], bender->legZ[1]); // left
 
 
 		glTranslatef(-paddingLeg, 0, hShoulder); // placing at shoulder's height
@@ -43,7 +41,7 @@ void drawBender(int nbSlices)
 				glTranslatef(((i*2)-1)*paddingShoulder, 0, 0); // then placing to the good side of the body, (i*2)-1 gives -1 then 1
 
 				glutSolidSphere(rShoulder, SLICES, STACKS); // drawing shoulder
-				drawLimb('h', nbSlices, armX[i], armY[i], armZ[i]); // arm
+				drawLimb('h', nbSlices, bender->armX[i], bender->armY[i], bender->armZ[i]); // arm
 			glPopMatrix();
 		}
 	glPopMatrix();
@@ -387,80 +385,97 @@ float Bezier4 ( float coor[4] , float t )
 	return coor[0]*(1-t)*(1-t)*(1-t) + 3*coor[1]*t*(1-t)*(1-t) + 3*coor[2]*t*t*(1-t) + coor[3]*t*t*t;
 }
 
-void setArmCoords(char axe, int side, int index, float value)
+void setArmCoords(Bender* bender, char axe, int side, int index, float value)
 {
 	//printf("set arm %c %d %d to %f\n", part, axe, side, index, value);
 
 	if(axe=='x')
-		armX[side][index]=value;
+		bender->armX[side][index]=value;
 	else if(axe=='y')
-		armY[side][index]=value;
+		bender->armY[side][index]=value;
 	else if(axe=='z')
-		armZ[side][index]=value;
+		bender->armZ[side][index]=value;
 	else
 		exit(EXIT_FAILURE);
 }
 
-void setLegCoords(char axe, int side, int index, float value)
+void setLegCoords(Bender* bender, char axe, int side, int index, float value)
 {
 	//printf("set leg %c %d %d to %f\n", part, axe, side, index, value);
 
 	if(axe=='x')
-		legX[side][index]=value;
+		bender->legX[side][index]=value;
 	else if(axe=='y')
-		legY[side][index]=value;
+		bender->legY[side][index]=value;
 	else if(axe=='z')
-		legZ[side][index]=value;
+		bender->legZ[side][index]=value;
 	else
 		exit(EXIT_FAILURE);
 }
 
-void setAllCoords(int pas)
+void setAllCoords(Bender* bender)
 {
-	float Sin = sin(increment*PI/180);
-	float Cos = cos(increment*PI/180);
-	float Sin1P = sin((increment+180)*PI/180);
-	float Cos1P = cos((increment+180)*PI/180);
+	int pas = 15;
+	float Sin = sin(bender->increment*PI/180);
+	float Cos = cos(bender->increment*PI/180);
+	float Sin1P = sin((bender->increment+180)*PI/180);
+	float Cos1P = cos((bender->increment+180)*PI/180);
 	float tmp;
 
 	// arms --------------------------------
-	setArmCoords('y', 0, 1, -(Sin*0.7));
-	setArmCoords('y', 0, 2, -(0.1 + Sin*(0.7+0.1)));
-	setArmCoords('y', 0, 3, -(0.15 + Sin*(1.1+0.15)));
+	setArmCoords(bender, 'y', 0, 1, -(Sin*0.7));
+	setArmCoords(bender, 'y', 0, 2, -(0.1 + Sin*(0.7+0.1)));
+	setArmCoords(bender, 'y', 0, 3, -(0.15 + Sin*(1.1+0.15)));
 
-	setArmCoords('z', 0, 1, -(0.55 + (Sin<0?-Sin:Sin)*(0.95-0.55)));
-	setArmCoords('z', 0, 2, -(1.765 + (Sin<0?-Sin:Sin)*(1.875-1.765)));
-	setArmCoords('z', 0, 3, -(2.2 + (Cos<0?-Cos:Cos)*(2.45-2.2)));
+	setArmCoords(bender, 'z', 0, 1, -(0.55 + (Sin<0?-Sin:Sin)*(0.95-0.55)));
+	setArmCoords(bender, 'z', 0, 2, -(1.765 + (Sin<0?-Sin:Sin)*(1.875-1.765)));
+	setArmCoords(bender, 'z', 0, 3, -(2.2 + (Cos<0?-Cos:Cos)*(2.45-2.2)));
 
-	setArmCoords('y', 1, 1, -(Sin1P*0.7));
-	setArmCoords('y', 1, 2, -(0.1 + Sin1P*(0.7+0.1)));
-	setArmCoords('y', 1, 3, -(0.15 + Sin1P*(1.1+0.15)));
+	setArmCoords(bender, 'y', 1, 1, -(Sin1P*0.7));
+	setArmCoords(bender, 'y', 1, 2, -(0.1 + Sin1P*(0.7+0.1)));
+	setArmCoords(bender, 'y', 1, 3, -(0.15 + Sin1P*(1.1+0.15)));
 
-	setArmCoords('z', 1, 1, -(0.55 + (Sin1P<0?-Sin1P:Sin1P)*(0.95-0.55)));
-	setArmCoords('z', 1, 2, -(1.765 + (Sin1P<0?-Sin1P:Sin1P)*(1.875-1.765)));
-	setArmCoords('z', 1, 3, -(2.2 + (Cos1P<0?-Cos1P:Cos1P)*(2.45-2.2)));
+	setArmCoords(bender, 'z', 1, 1, -(0.55 + (Sin1P<0?-Sin1P:Sin1P)*(0.95-0.55)));
+	setArmCoords(bender, 'z', 1, 2, -(1.765 + (Sin1P<0?-Sin1P:Sin1P)*(1.875-1.765)));
+	setArmCoords(bender, 'z', 1, 3, -(2.2 + (Cos1P<0?-Cos1P:Cos1P)*(2.45-2.2)));
 
 	// legs -------------------------------------------
-	setLegCoords('y', 0, 1, (Sin*1.125));
-	setLegCoords('y', 0, 2, (Sin*1.2));
-	setLegCoords('y', 0, 3, (Sin*1.225));
+	setLegCoords(bender, 'y', 0, 1, (Sin*1.125));
+	setLegCoords(bender, 'y', 0, 2, (Sin*1.2));
+	setLegCoords(bender, 'y', 0, 3, (Sin*1.225));
 
-	setLegCoords('z', 0, 2, -(1.8 + Cos*(2-1.8)));
+	setLegCoords(bender, 'z', 0, 2, -(1.8 + Cos*(2-1.8)));
 	tmp = -(2.675+(3.3-2.85) + Cos*(3.5-2.675));
-	setLegCoords('z', 0, 3, tmp<-3 ? -3:tmp);
+	setLegCoords(bender, 'z', 0, 3, tmp<-3 ? -3:tmp);
 
-	setLegCoords('y', 1, 1, (Sin1P*1.125));
-	setLegCoords('y', 1, 2, (Sin1P*1.2));
-	setLegCoords('y', 1, 3, (Sin1P*1.225));
+	setLegCoords(bender, 'y', 1, 1, (Sin1P*1.125));
+	setLegCoords(bender, 'y', 1, 2, (Sin1P*1.2));
+	setLegCoords(bender, 'y', 1, 3, (Sin1P*1.225));
 
-	setLegCoords('z', 1, 2, -(1.8 + Cos1P*(2-1.8)));
+	setLegCoords(bender, 'z', 1, 2, -(1.8 + Cos1P*(2-1.8)));
 	tmp = -(2.675+(3.3-2.85) + Cos1P*(3.5-2.675)); //3.3-2.85 valeur trouvée pour faire que le pied heurte le sol quand il ne va plus en avant
-	setLegCoords('z', 1, 3, tmp<-3 ? -3:tmp);
+	setLegCoords(bender, 'z', 1, 3, tmp<-3 ? -3:tmp);
 
 
-	if(increment<360)
-		increment+=pas;
+	if(bender->increment<360)
+		bender->increment+=pas;
 	else
-		increment=0; // on peut se permettre car elles sont 360 periodiques
+		bender->increment=0; // on peut se permettre car elles sont 360 periodiques
 }
 
+
+void initBender(Bender* bender)
+{
+	int i, j;
+	for(i=0; i<2; i++)
+		for(j=0; j<4; j++)
+		{
+			bender->legX[i][j] = startlegX[i][j];
+			bender->legY[i][j] = startlegY[i][j];
+			bender->legZ[i][j] = startlegZ[i][j];
+
+			bender->armX[i][j] = startarmX[i][j];
+			bender->armY[i][j] = startarmY[i][j];
+			bender->armZ[i][j] = startarmZ[i][j];
+		}
+}

@@ -1,6 +1,8 @@
-#include "../include/global.h"
-#include "../include/moteur.h"
-#include "../include/collisions.h"
+#include "global.h"
+#include "moteur.h"
+#include "collisions.h"
+#include "Bender.h"
+
 #define NBROBOTS 3
 #define NBBUILDINGS 12
 #define TURNING 0
@@ -28,20 +30,11 @@ double cameraSpeed = 1.0;
 int cameraKeys[4];
 int follows;
 
-// Robot
-double position[NBROBOTS][3];
-double direction[NBROBOTS][3];
-double angle[NBROBOTS];
-
-// Building
+// Robots
+Bender robot[NBROBOTS];
+// Buildings
 double buildingPosition[NBBUILDINGS][3];
 int buildingType[NBBUILDINGS];
-
-// Robot artificial intelligence
-int action[NBROBOTS]; // Action to be made by the robot, either turning or moving forward.
-clock_t endActionTime[NBROBOTS];	// Time at which the action is to be ended,
-									// at which point a new action will have to be programmed.
-int angleDirection[NBROBOTS]; // Indicates where the robot is turning to, left or right.
 
 // Shapes
 int My_Square;
@@ -112,15 +105,17 @@ void initControls()
 		mouseButton[i] = 0;
 
 	for (i=0; i<NBROBOTS; i++) {
-		position[i][0] = 0+i*5;
-		position[i][1] = 0+i*5;
-		position[i][2] = 0;
-		direction[i][0] = 1.0;
-		direction[i][1] = 0.0;
-		direction[i][2] = 0.0;
-		angle[i] = 0.0;
-		action[NBROBOTS] = 1;
-		endActionTime[NBROBOTS] = clock() - 1000;
+		initBender(robot+i);
+
+		robot[i].position[0] = 0+i*5;
+		robot[i].position[1] = 0+i*5;
+		robot[i].position[2] = 0;
+		robot[i].direction[0] = 1.0;
+		robot[i].direction[1] = 0.0;
+		robot[i].direction[2] = 0.0;
+		robot[i].angle = 0.0;
+		robot[i].action = 1;
+		robot[i].endActionTime = clock() - 1000;
 	}
 }
 
@@ -217,21 +212,15 @@ void render_scene()
 	// Robots
 	for(i=0; i<NBROBOTS; i++) {
 		glPushMatrix();
-		glTranslatef(position[i][0], position[i][1], position[i][2]);
-		glRotatef((angle[i]+1.5) * 180.0 / M_PI, 0, 0, 1);
-		drawBender(100);
+		glTranslatef(robot[i].position[0], robot[i].position[1], robot[i].position[2]);
+		glRotatef((robot[i].angle+1.5) * 180.0 / M_PI, 0, 0, 1);
+		drawBender(100, robot+i);
 		glPopMatrix();
 	}
 
-	// Buildings
-	//for(i=0; i<NBBUILDINGS; i++)
-	{
-		glPushMatrix();
-		//glTranslatef(buildingPosition[i][0], buildingPosition[i][1], buildingPosition[i][2]);
-		//glCallList(buildingType[i]);
-		glCallList(10); // Displays the city
-		glPopMatrix();
-	}
+	glPushMatrix();
+	glCallList(10); // Displays the city
+	glPopMatrix();
 	//-----------------------------------------------------------------------------------------<<<
 
 	glutSwapBuffers();
@@ -393,80 +382,80 @@ GLvoid window_timer()
 	  if (arrowKeys[ARROW_LEFT] && !arrowKeys[ARROW_RIGHT])
 	  {
 		// Turn left
-		angle[robotIndex] += angleIncrement;
-		if (angle[robotIndex]>= M_PI)
-			angle[robotIndex] -= 2*M_PI;
-		direction[robotIndex][0] = cos (angle[robotIndex]);
-		direction[robotIndex][1] = sin (angle[robotIndex]);
+		robot[robotIndex].angle += angleIncrement;
+		if (robot[robotIndex].angle>= M_PI)
+			robot[robotIndex].angle -= 2*M_PI;
+		robot[robotIndex].direction[0] = cos (robot[robotIndex].angle);
+		robot[robotIndex].direction[1] = sin (robot[robotIndex].angle);
 	  }
 	  else if (arrowKeys[ARROW_RIGHT] && !arrowKeys[ARROW_LEFT])
 	  {
 		// Turn right
-		angle[robotIndex] -= angleIncrement;
-		if (angle[robotIndex] < -M_PI)
-			angle[robotIndex] += 2*M_PI;
-		direction[robotIndex][0] = cos (angle[robotIndex]);
-		direction[robotIndex][1] = sin (angle[robotIndex]);
+		robot[robotIndex].angle -= angleIncrement;
+		if (robot[robotIndex].angle < -M_PI)
+			robot[robotIndex].angle += 2*M_PI;
+		robot[robotIndex].direction[0] = cos (robot[robotIndex].angle);
+		robot[robotIndex].direction[1] = sin (robot[robotIndex].angle);
 	  }
 
 	  if (arrowKeys[ARROW_UP] && !arrowKeys[ARROW_DOWN])
 	  {
 		// Move forward
-		tempPosition[0] = position[robotIndex][0] + speed[0]*direction[robotIndex][0];
-		tempPosition[1] = position[robotIndex][1] + speed[1]*direction[robotIndex][1];
+		tempPosition[0] = robot[robotIndex].position[0] + speed[0]*robot[robotIndex].direction[0];
+		tempPosition[1] = robot[robotIndex].position[1] + speed[1]*robot[robotIndex].direction[1];
 		if (checkCollision(tempPosition, robotIndex) == 0)
 		{
-			position[robotIndex][0] = tempPosition[0];
-			position[robotIndex][1] = tempPosition[1];
-			setAllCoords(15);
+			robot[robotIndex].position[0] = tempPosition[0];
+			robot[robotIndex].position[1] = tempPosition[1];
+			setAllCoords(robot+robotIndex);
 		}
 	  }
 
 	  else if (arrowKeys[ARROW_DOWN] && !arrowKeys[ARROW_UP])
 	  {
 		// Move backward
-		tempPosition[0] = position[robotIndex][0] - speed[0]*direction[robotIndex][0];
-		tempPosition[1] = position[robotIndex][1] - speed[1]*direction[robotIndex][1];
+		tempPosition[0] = robot[robotIndex].position[0] - speed[0]*robot[robotIndex].direction[0];
+		tempPosition[1] = robot[robotIndex].position[1] - speed[1]*robot[robotIndex].direction[1];
 		if (checkCollision(tempPosition, robotIndex) == 0)
 		{
-			position[robotIndex][0] = tempPosition[0];
-			position[robotIndex][1] = tempPosition[1];
-			setAllCoords(15);
+			robot[robotIndex].position[0] = tempPosition[0];
+			robot[robotIndex].position[1] = tempPosition[1];
+			setAllCoords(robot+robotIndex);
 		}
 	  }
 	}
 	else // The robot is currently not being controlled by the user.
 	{
-		if (endActionTime[robotIndex] < clock()) {
+		if (robot[robotIndex].endActionTime < clock()) {
 			// The following action will be finished in 300ms to 2 seconds.
-			endActionTime[robotIndex] = clock() + (rand()%17 + 3) * 100;
+			robot[robotIndex].endActionTime = clock() + (rand()%17 + 3) * 100;
 			// We change the robot's action.
-			action[robotIndex] = (action[robotIndex] == TURNING) ? MOVING : TURNING;
-			if (action[robotIndex] == TURNING)
-				angleDirection[robotIndex] = (rand() % 2) * 2 - 1; // -1 or +1
+			robot[robotIndex].action = (robot[robotIndex].action == TURNING) ? MOVING : TURNING;
+			if (robot[robotIndex].action == TURNING)
+				robot[robotIndex].angleDirection = (rand() % 2) * 2 - 1; // -1 or +1
 		}
-		if (action[robotIndex] == TURNING)
+		if (robot[robotIndex].action == TURNING)
 		{
-			angle[robotIndex] += angleIncrement * angleDirection[robotIndex];
-			if (angle[robotIndex]>= M_PI)
-				angle[robotIndex] -= 2*M_PI;
-			else if (angle[robotIndex] < -M_PI)
-				angle[robotIndex] += 2*M_PI;
-			direction[robotIndex][0] = cos (angle[robotIndex]);
-			direction[robotIndex][1] = sin (angle[robotIndex]);
+			robot[robotIndex].angle += angleIncrement * robot[robotIndex].angleDirection;
+			if (robot[robotIndex].angle>= M_PI)
+				robot[robotIndex].angle -= 2*M_PI;
+			else if (robot[robotIndex].angle < -M_PI)
+				robot[robotIndex].angle += 2*M_PI;
+			robot[robotIndex].direction[0] = cos (robot[robotIndex].angle);
+			robot[robotIndex].direction[1] = sin (robot[robotIndex].angle);
 		}
 		else // action == MOVING
 		{
-			tempPosition[0] = position[robotIndex][0] + speed[0]*direction[robotIndex][0];
-			tempPosition[1] = position[robotIndex][1] + speed[1]*direction[robotIndex][1];
+			tempPosition[0] = robot[robotIndex].position[0] + speed[0]*robot[robotIndex].direction[0];
+			tempPosition[1] = robot[robotIndex].position[1] + speed[1]*robot[robotIndex].direction[1];
 			if (checkCollision(tempPosition, robotIndex) == 0)
 			{
-				position[robotIndex][0] = tempPosition[0];
-				position[robotIndex][1] = tempPosition[1];
-				setAllCoords(15);
+				robot[robotIndex].position[0] = tempPosition[0];
+				robot[robotIndex].position[1] = tempPosition[1];
+				setAllCoords(robot+robotIndex);
 			}
 			else {
-				endActionTime[robotIndex] = clock() - 1000;
+				robot[robotIndex].endActionTime = clock() - 1000;
 			}
 		}
 	}
@@ -517,12 +506,12 @@ void processCameraChange()
 {
 	double r;
 	if (follows != NBROBOTS)
-		gluLookAt(position[follows][0] - 10*direction[follows][0],
+		gluLookAt(robot[follows].position[0] - 10*robot[follows].direction[0],
 				  10,
-				  - position[follows][1] + 10*direction[follows][1],
-				  position[follows][0],
-				  position[follows][2] + 5,
-				  -position[follows][1],
+				  - robot[follows].position[1] + 10*robot[follows].direction[1],
+				  robot[follows].position[0],
+				  robot[follows].position[2] + 5,
+				  -robot[follows].position[1],
 				  0, 1, 0);
 	else {
 		if (phi > 89)
@@ -564,7 +553,7 @@ int checkCollision(double robotPosition[3], int robotIndex)
 {
 	int i=0;
 	int collision = 0;
-	Object** bender = getBender(robotPosition);
+	Object** bender = getBender(robot[robotIndex].position);
 	Object** otherBender;
 	Object* building;
 
@@ -572,7 +561,7 @@ int checkCollision(double robotPosition[3], int robotIndex)
 	{
 		if (i != robotIndex)
 		{
-			otherBender = getBender(position[i]);
+			otherBender = getBender(robot[i].position);
 			if (inCollision(bender[TYPE_CYLINDER], otherBender[TYPE_CYLINDER]))
 				collision = 1;
 			free(otherBender[0]);

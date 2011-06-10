@@ -1,4 +1,4 @@
-#include "../include/shapes.h"
+#include "shapes.h"
 
 // Shapes
 int My_Square = 8;
