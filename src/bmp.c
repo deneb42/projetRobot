@@ -25,7 +25,7 @@
  * WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 
-#include "../include/bmp.h"
+#include "bmp.h"
 
 void ReadBMP1bit(FILE *fp, GLubyte *colormap, os_type_e os_type, gl_texture_t *texinfo)
 {

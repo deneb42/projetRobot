@@ -1,6 +1,7 @@
 #include "global.h"
 #include "moteur.h"
 #include "collisions.h"
+#include "city.h"
 #include "bender.h"
 
 #define NBROBOTS 3
