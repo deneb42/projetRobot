@@ -37,31 +37,31 @@ void makeSky(int tex)
 			glEnd();
 			
 			glBegin(GL_POLYGON);//gauche
-				glTexCoord2f(0, 0.65);		glVertex3f(-300,-300,300);
-				glTexCoord2f(0.25, 0.65);		glVertex3f(-300,300,300);
-				glTexCoord2f(0.25, 0.34);		glVertex3f(-300,300,-300);
-				glTexCoord2f(0, 0.34);      glVertex3f(-300,-300,-300);
+				glTexCoord2f(0, 0.63);		glVertex3f(-300,-300,300);
+				glTexCoord2f(0.25, 0.63);		glVertex3f(-300,300,300);
+				glTexCoord2f(0.25, 0.36);		glVertex3f(-300,300,-300);
+				glTexCoord2f(0, 0.36);      glVertex3f(-300,-300,-300);
 			glEnd();
 			
 			glBegin(GL_POLYGON);//bas
-				glTexCoord2f(0.25, 0.34);	glVertex3f(-300,300,-300);
-				glTexCoord2f(0.5, 0.34);		glVertex3f(300,300,-300);
+				glTexCoord2f(0.25, 0.36);	glVertex3f(-300,300,-300);
+				glTexCoord2f(0.5, 0.36);		glVertex3f(300,300,-300);
 				glTexCoord2f(0.5, 0);		glVertex3f(300,-300,-300);
 				glTexCoord2f(0.25, 0);      glVertex3f(-300,-300,-300);
 			glEnd();
 			
 			glBegin(GL_POLYGON);//droite
-				glTexCoord2f(0.5, 0.65);		glVertex3f(300,300,300);
-				glTexCoord2f(0.75, 0.65);		glVertex3f(300,-300,300);
-				glTexCoord2f(0.75, 0.34);		glVertex3f(300,-300,-300);
-				glTexCoord2f(0.5, 0.34);      glVertex3f(300,300,-300);
+				glTexCoord2f(0.5, 0.63);		glVertex3f(300,300,300);
+				glTexCoord2f(0.75, 0.63);		glVertex3f(300,-300,300);
+				glTexCoord2f(0.75, 0.36);		glVertex3f(300,-300,-300);
+				glTexCoord2f(0.5, 0.36);      glVertex3f(300,300,-300);
 			glEnd();
 			
 			glBegin(GL_POLYGON);//derrière
-				glTexCoord2f(0.75, 0.65);	glVertex3f(300,-300,300);
-				glTexCoord2f(1, 0.65);		glVertex3f(-300,-300,300);
-				glTexCoord2f(1, 0.34);		glVertex3f(-300,-300,-300);
-				glTexCoord2f(0.75, 0.34);      glVertex3f(300,-300,-300);
+				glTexCoord2f(0.75, 0.63);	glVertex3f(300,-300,300);
+				glTexCoord2f(1, 0.63);		glVertex3f(-300,-300,300);
+				glTexCoord2f(1, 0.36);		glVertex3f(-300,-300,-300);
+				glTexCoord2f(0.75, 0.36);      glVertex3f(300,-300,-300);
 			glEnd();
 				
 			glDisable(GL_TEXTURE_2D);
@@ -88,7 +88,7 @@ void createCity(char *chemin)
 	makeSky(texId[13]); // creating skybox
 
     //sol
-    glNewList(SOL, GL_COMPILE);
+    glNewList(FLOOR, GL_COMPILE);
     glEnable(GL_TEXTURE_2D);
     glBindTexture(GL_TEXTURE_2D,texId[0]);
 
@@ -572,18 +572,18 @@ void createCity(char *chemin)
 	glNewList(CITY, GL_COMPILE); // declaration de la liste City
 
 		glCallList(SKY);
-		glCallList(11);
-		glCallList(12);
-		glCallList(13);
-		glCallList(14);
-		glCallList(15);
-		glCallList(16);
-		glCallList(17);
-		glCallList(18);
-		glCalllist(19);
-		glCallList(20);
-		glCallList(21);
-		glCallList(22);
-		glCallList(23);
+		glCallList(FLOOR);
+		glCallList(BAT1);
+		glCallList(BAT2);
+		glCallList(BAT3);
+		glCallList(BAT4);
+		glCallList(BAT5);
+		glCallList(BAT6);
+		glCallList(BAT7);
+		glCallList(BAT8);
+		glCallList(BAT9);
+		glCallList(BAT10);
+		glCallList(BAT11);
+		glCallList(BAT12);
 	glEndList();
 }

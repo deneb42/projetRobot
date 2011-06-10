@@ -1,4 +1,4 @@
-#include <math.h>
+#include "global.h"
 #include "collisions.h"
 
 
@@ -17,6 +17,8 @@ int inCollision(Object* obj1, Object* obj2)
 		else if (obj1->type == TYPE_CYLINDER)
 			return collisionTYPE_CYLINDERTYPE_CYLINDER(obj1, obj2);
 	}
+	
+	exit(EXIT_FAILURE);
 }
 
 int collisionTYPE_CYLINDERTYPE_CYLINDER(Object* a, Object* b)
@@ -41,10 +43,10 @@ int collisionTYPE_BOXTYPE_CYLINDER(Object* b, Object* c)
 {
 	Object tempTYPE_BOX[2] = {{b->x - c->r, b->y, b->z, b->h, 0, b->w + c->r, b->d},
 						 {b->x, b->y - c->r, b->z, b->h + c->r, 0, b->w, b->d}};
-	Object tempTYPE_CYLINDER[4] = {{b->x, c->y, b->z, c->h, c->r, 0, 0},
+	/*Object tempTYPE_CYLINDER[4] = {{b->x, c->y, b->z, c->h, c->r, 0, 0},
 							  {b->x + b->w, c->y, b->z, c->h, c->r, 0, 0},
 							  {b->x, c->y, b->z + b->d, c->h, c->r, 0, 0},
-							  {b->x + b->w, c->y, b->z + b->d, c->h, c->r, 0, 0}};
+							  {b->x + b->w, c->y, b->z + b->d, c->h, c->r, 0, 0}};*/
 	int i, result = 0;
 	double distance;
 	if (b->y > c->y + c->h) return 0;

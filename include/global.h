@@ -29,7 +29,7 @@
 	
 	#define CITY 10
 	#define SKY 11
-	#define	SOL 12
+	#define	FLOOR 12
 	#define	BAT1 13
 	#define	BAT2 14
 	#define	BAT3 15

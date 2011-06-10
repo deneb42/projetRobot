@@ -1,6 +1,11 @@
+#include "global.h"
 #include "moteur.h"
 #include "collisions.h"
+#include "shapes.h"
+#include "bender.h"
+
 #define NBROBOTS 2
+
 float angle_z=0;
 float angle_y=0;
 float angle_x=0;
@@ -38,6 +43,7 @@ double angle[NBROBOTS];
 // Shapes
 int My_Square;
 int My_Cube;
+
 int main(int argc, char* argv[])
 {
 	int i;
@@ -293,7 +299,7 @@ GLvoid window_timer()
 {
   int i, robotIndex=0;
   double speed[] = {.5, .5, .5};
-  double rotation[] = {1.0, 0.0, 1.0};
+  //double rotation[] = {1.0, 0.0, 1.0};
   double angleIncrement = 1.0/18.0;
   double* leftDirection;
   double tempPosition[3];
@@ -419,7 +425,7 @@ GLvoid window_timer()
 void processCameraChange()
 {
 	double r;
-	int i;
+	//int i;
 	if (follows != NBROBOTS)
 		gluLookAt(position[follows][0] - 10*direction[follows][0],
 				  10,
