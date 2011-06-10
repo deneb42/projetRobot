@@ -9,16 +9,19 @@
 	#define BLUE_GRAY 0.6,0.69,0.78
 	#define LIGHT_BLACK 0.4, 0.5, 0.5
 
+	// Structure representing a Bender robot.
 	typedef struct Bender Bender;
 	struct Bender
 	{
 		// Controls
-		double position[3];
-		double direction[3];
-		double angle;
+		double position[3];		// Position
+		double direction[3];	// Direction in which the robot is looking.
+		double angle;			// Angle corresponding to the direction.
 
 		// Animations
-		int increment;
+		int increment;			// Used to determine where the body components have to
+								// be displayed during the animation.
+		// Leg and arms positions.
 		float legX[2][4];
 		float legY[2][4];
 		float legZ[2][4];
@@ -28,10 +31,10 @@
 		float armZ[2][4];
 
 		// Artificial intelligence
-		int action; // Action to be made by the robot, either turning or moving forward.
-		clock_t endActionTime;	// Time at which the action is to be ended,
-									  // at which point a new action will have to be programmed.
-		int angleDirection; // Indicates where the robot is turning to, left or right.
+		int action;				// Action to be made by the robot, either turning or moving forward.
+		clock_t endActionTime;	// Time at which the current action is to be ended,
+								// at which point a new action will have to be decided.
+		int angleDirection;		// Indicates where the robot is turning to, left or right.
 	};
 
 	// List creation functions
