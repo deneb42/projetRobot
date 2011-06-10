@@ -1,9 +1,10 @@
 #include "global.h"
 #include "moteur.h"
 #include "collisions.h"
+#include "city.h"
 #include "bender.h"
 
-#define NBROBOTS 10
+#define NBROBOTS 3
 #define NBBUILDINGS 12
 #define TURNING 0
 #define MOVING 1
@@ -214,10 +215,10 @@ void render_scene()
 		glPushMatrix();
 		glTranslatef(robot[i].position[0], robot[i].position[1], robot[i].position[2]);
 		glRotatef((robot[i].angle+1.5) * 180.0 / M_PI, 0, 0, 1);
-		if (i == follows && NBROBOTS > 5)
+		if (i == follows || NBROBOTS <=3)
 			drawBender(100, robot+i);
 		else
-			drawBender(30, robot+i);
+			drawBender(50, robot+i);
 		glPopMatrix();
 	}
 
@@ -367,7 +368,7 @@ void window_specialUpFunc(int key, int x, int y)
 }
 
 GLvoid window_timer()
-{int a=0;
+{
   int i, robotIndex=0;
   double speed[] = {.5, .5, .5};
   //double rotation[] = {1.0, 0.0, 1.0};
@@ -406,7 +407,6 @@ GLvoid window_timer()
 		// Move forward
 		tempPosition[0] = robot[robotIndex].position[0] + speed[0]*robot[robotIndex].direction[0];
 		tempPosition[1] = robot[robotIndex].position[1] + speed[1]*robot[robotIndex].direction[1];
-		a = checkCollision(tempPosition, robotIndex);
 		if (checkCollision(tempPosition, robotIndex) == 0)
 		{
 			robot[robotIndex].position[0] = tempPosition[0];

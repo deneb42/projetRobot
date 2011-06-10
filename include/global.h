@@ -45,5 +45,6 @@
 	
 	// utility functions
 	void loadTexture(char* chemin, char* name, int *tex);
+	void drawRepere();
 	
 #endif

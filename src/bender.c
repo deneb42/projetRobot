@@ -308,7 +308,7 @@ void drawLimb(char limb, int nbSlices, float *controlsX, float *controlsY, float
 			olBezY=bezY;
 			olBezZ=bezZ;// keeping old coeffs
 
-			if(nbSlices>50 && n%15==2)
+			if(nbSlices>=50 && n%15==2)
 				glColor3f(LIGHT_BLACK);
 			else
 				glColor3f(BLUE_GRAY); // light black every 15th
