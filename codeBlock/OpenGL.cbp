@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes" ?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6" />
+	<Project>
+		<Option title="OpenGL" />
+		<Option makefile="makefile" />
+		<Option pch_mode="2" />
+		<Option compiler="gcc" />
+		<Build>
+			<Target title="Debug">
+				<Option output="bin\Debug\OpenGL" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="C:\Program Files (x86)\CodeBlocks\MinGW\bin" />
+				<Option object_output="obj\Debug\" />
+				<Option type="1" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-g" />
+				</Compiler>
+			</Target>
+			<Target title="Release">
+				<Option output="bin\Release\OpenGL" prefix_auto="1" extension_auto="1" />
+				<Option working_dir="C:\Program Files (x86)\CodeBlocks\MinGW\bin" />
+				<Option object_output="obj\Release\" />
+				<Option type="0" />
+				<Option compiler="gcc" />
+				<Compiler>
+					<Add option="-O2" />
+				</Compiler>
+				<Linker>
+					<Add option="-s" />
+				</Linker>
+			</Target>
+		</Build>
+		<Compiler>
+			<Add option="-Wall" />
+			<Add directory="C:\Program Files (x86)\CodeBlocks\MinGW\include" />
+			<Add directory="C:\Users\Jeroen\Desktop\projetRobot\include\" />
+		</Compiler>
+		<Linker>
+			<Add library="glut32" />
+			<Add library="opengl32" />
+			<Add library="glu32" />
+			<Add library="winmm" />
+			<Add library="gdi32" />
+			<Add directory="C:\Program Files (x86)\CodeBlocks\MinGW\lib" />
+		</Linker>
+		<Unit filename="include\bender.h" />
+		<Unit filename="include\bmp.h" />
+		<Unit filename="include\city.h" />
+		<Unit filename="include\collisions.h" />
+		<Unit filename="include\global.h" />
+		<Unit filename="include\moteur.h" />
+		<Unit filename="include\shapes.h" />
+		<Unit filename="src\bender.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\bmp.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\city.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\collisions.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\moteur.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\shapes.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Unit filename="src\utils.c">
+			<Option compilerVar="CC" />
+		</Unit>
+		<Extensions>
+			<code_completion />
+			<debugger />
+		</Extensions>
+	</Project>
+</CodeBlocks_project_file>
