@@ -1,7 +1,7 @@
 #include "moteur.h"
 #include "collisions.h"
 #define NBROBOTS 1
-#define NBBUILDINGS 1
+#define NBBUILDINGS 12
 #define TURNING 0
 #define MOVING 1
 
@@ -143,54 +143,59 @@ void initBuildings() {
 	buildingPosition[0][1] = 20;
 	buildingPosition[0][2] = 0;
 
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
+	buildingType[0] = 12;
+	buildingPosition[0][0] = 30;
+	buildingPosition[0][1] = -90;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 13;
+	buildingPosition[0][0] = 60;
+	buildingPosition[0][1] = 80;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 14;
+	buildingPosition[0][0] = 0;
+	buildingPosition[0][1] = -60;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 15;
+	buildingPosition[0][0] = -15;
+	buildingPosition[0][1] = -15;
+	buildingPosition[0][2] = 0;
+
+	buildingType[0] = 16;
+	buildingPosition[0][0] = -30;
 	buildingPosition[0][1] = 20;
 	buildingPosition[0][2] = 0;
 
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
+	buildingType[0] = 17;
+	buildingPosition[0][0] = -70;
+	buildingPosition[0][1] = -60;
 	buildingPosition[0][2] = 0;
 
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
+	buildingType[0] = 18;
+	buildingPosition[0][0] = 100;
+	buildingPosition[0][1] = 50;
 	buildingPosition[0][2] = 0;
 
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
+	buildingType[0] = 19;
+	buildingPosition[0][0] = -100;
+	buildingPosition[0][1] = -120;
 	buildingPosition[0][2] = 0;
 
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
+	buildingType[0] = 20;
+	buildingPosition[0][0] = -110;
+	buildingPosition[0][1] = 80;
 	buildingPosition[0][2] = 0;
 
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
+	buildingType[0] = 21;
+	buildingPosition[0][0] = -110;
+	buildingPosition[0][1] = 80;
 	buildingPosition[0][2] = 0;
 
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
-	buildingPosition[0][2] = 0;
-
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
-	buildingPosition[0][2] = 0;
-
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
-	buildingPosition[0][2] = 0;
-
-	buildingType[0] = 11;
-	buildingPosition[0][0] = 20;
-	buildingPosition[0][1] = 20;
+	buildingType[0] = 22;
+	buildingPosition[0][0] = -990;
+	buildingPosition[0][1] = -60;
 	buildingPosition[0][2] = 0;
 }
 
