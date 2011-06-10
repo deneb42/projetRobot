@@ -1,4 +1,4 @@
-#include <math.h>
+#include "global.h"
 #include "collisions.h"
 
 

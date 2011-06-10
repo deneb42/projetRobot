@@ -1,7 +1,7 @@
 #include "global.h"
 #include "moteur.h"
 #include "collisions.h"
-#include "Bender.h"
+#include "bender.h"
 
 #define NBROBOTS 3
 #define NBBUILDINGS 12
@@ -367,7 +367,7 @@ GLvoid window_timer()
 {
   int i, robotIndex=0;
   double speed[] = {.5, .5, .5};
-  double rotation[] = {1.0, 0.0, 1.0};
+  //double rotation[] = {1.0, 0.0, 1.0};
   double angleIncrement = 1.0/18.0;
   double* leftDirection;
   double tempPosition[3];
