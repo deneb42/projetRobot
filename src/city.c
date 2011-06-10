@@ -433,7 +433,7 @@ void createCity(char *chemin)
     GLUquadricObj* quadric3 = gluNewQuadric();
     gluQuadricTexture(quadric3, GLU_TRUE);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texId[12]);
+    glBindTexture(GL_TEXTURE_2D,texId[9]);
 
     glPushMatrix();
     glTranslatef(100, 50, 0);
@@ -507,7 +507,7 @@ void createCity(char *chemin)
     GLUquadricObj* quadric4 = gluNewQuadric();
     gluQuadricTexture(quadric4, GLU_TRUE);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texId[13]);
+    glBindTexture(GL_TEXTURE_2D,texId[7]);
 
     glPushMatrix();
     glTranslatef(100,-60,0);
@@ -531,7 +531,7 @@ void createCity(char *chemin)
     GLUquadricObj* quadric5 = gluNewQuadric();
     gluQuadricTexture(quadric5, GLU_TRUE);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texId[14]);
+    glBindTexture(GL_TEXTURE_2D,texId[8]);
 
     glPushMatrix();
     glTranslatef(-110,80,0);
@@ -554,8 +554,8 @@ void createCity(char *chemin)
     gluQuadricNormals(quadric6, GLU_SMOOTH);
     gluQuadricTexture(quadric6, GLU_TRUE);
     glEnable(GL_TEXTURE_2D);
-    glBindTexture(GL_TEXTURE_2D,texId[15]);
-
+    glBindTexture(GL_TEXTURE_2D,texId[12]);
+	glColor3f(1, 1, 1);
     glPushMatrix();
     glTranslatef(-90,-60,0);
     glTranslatef(0,0,5);
