@@ -48,6 +48,9 @@ GLvoid window_motionFunc(int x, int y);
 
 int main(int argc, char* argv[])
     {
+        
+        printf("lol :%s\n", argv[0]);
+        
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutInitWindowSize(400, 400);
