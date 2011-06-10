@@ -1,5 +1,5 @@
-#include "city.h"
-#include "global.h"
+#include "../include/city.h"
+#include "../include/global.h"
 
 
 //Loader de textures

@@ -50,13 +50,6 @@ int collisionTYPE_BOXTYPE_CYLINDER(Object* b, Object* c)
 	double distance;
 	if (b->y > c->y + c->h) return 0;
 	if (b->y + b->h < c->y) return 0;
-	for(i=0; i<2; i++) {
-		printf("x : %f  y : %f  z : %f  h : %f  w : %f  d : %f\n",
-				tempTYPE_BOX[i].x, tempTYPE_BOX[i].y, tempTYPE_BOX[i].z, tempTYPE_BOX[i].h, tempTYPE_BOX[i].w, tempTYPE_BOX[i].d );
-	}
-	printf("x : %f  y : %f  z : %f  h : %f  w : %f  d : %f  r : %f\n\n",
-				b->x, b->y, b->z, b->h, b->w, b->d , b->r);
-
 
 	for(i=0; i<2 && result == 0; i++)
 		result = collisionPointRectangle(c->x, c->z, tempTYPE_BOX+i);

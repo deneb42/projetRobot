@@ -92,6 +92,7 @@ int main(int argc, char* argv[])
 
 	//--------------------------------------------------------------------------- HERE 1-------<<<
 	makeBender(chemin);
+	createCity(chemin);
 	free(chemin);
 	//-----------------------------------------------------------------------------------------<<<
 
@@ -145,60 +146,60 @@ void initBuildings() {
 	buildingPosition[0][1] = 20;
 	buildingPosition[0][2] = 0;
 
-	buildingType[0] = 12;
-	buildingPosition[0][0] = 30;
-	buildingPosition[0][1] = -90;
-	buildingPosition[0][2] = 0;
+	buildingType[1] = 12;
+	buildingPosition[1][0] = 30;
+	buildingPosition[1][1] = -90;
+	buildingPosition[1][2] = 0;
 
-	buildingType[0] = 13;
-	buildingPosition[0][0] = 60;
-	buildingPosition[0][1] = 80;
-	buildingPosition[0][2] = 0;
+	buildingType[2] = 13;
+	buildingPosition[2][0] = 60;
+	buildingPosition[2][1] = 80;
+	buildingPosition[2][2] = 0;
 
-	buildingType[0] = 14;
-	buildingPosition[0][0] = 0;
-	buildingPosition[0][1] = -60;
-	buildingPosition[0][2] = 0;
+	buildingType[3] = 14;
+	buildingPosition[3][0] = -10;
+	buildingPosition[3][1] = -60;
+	buildingPosition[3][2] = 0;
 
-	buildingType[0] = 15;
-	buildingPosition[0][0] = -15;
-	buildingPosition[0][1] = -15;
-	buildingPosition[0][2] = 0;
+	buildingType[4] = 15;
+	buildingPosition[4][0] = -15;
+	buildingPosition[4][1] = -15;
+	buildingPosition[4][2] = 0;
 
-	buildingType[0] = 16;
-	buildingPosition[0][0] = -30;
-	buildingPosition[0][1] = 20;
-	buildingPosition[0][2] = 0;
+	buildingType[5] = 16;
+	buildingPosition[5][0] = -30;
+	buildingPosition[5][1] = 20;
+	buildingPosition[5][2] = 0;
 
-	buildingType[0] = 17;
-	buildingPosition[0][0] = -70;
-	buildingPosition[0][1] = -60;
-	buildingPosition[0][2] = 0;
+	buildingType[6] = 17;
+	buildingPosition[6][0] = -70;
+	buildingPosition[6][1] = -60;
+	buildingPosition[6][2] = 0;
 
-	buildingType[0] = 18;
-	buildingPosition[0][0] = 100;
-	buildingPosition[0][1] = 50;
-	buildingPosition[0][2] = 0;
+	buildingType[7] = 18;
+	buildingPosition[7][0] = 100;
+	buildingPosition[7][1] = 50;
+	buildingPosition[7][2] = 0;
 
-	buildingType[0] = 19;
-	buildingPosition[0][0] = -100;
-	buildingPosition[0][1] = -120;
-	buildingPosition[0][2] = 0;
+	buildingType[8] = 19;
+	buildingPosition[8][0] = -100;
+	buildingPosition[8][1] = -120;
+	buildingPosition[8][2] = 0;
 
-	buildingType[0] = 20;
-	buildingPosition[0][0] = -110;
-	buildingPosition[0][1] = 80;
-	buildingPosition[0][2] = 0;
+	buildingType[9] = 20;
+	buildingPosition[9][0] = -110;
+	buildingPosition[9][1] = 80;
+	buildingPosition[9][2] = 0;
 
-	buildingType[0] = 21;
-	buildingPosition[0][0] = -110;
-	buildingPosition[0][1] = 80;
-	buildingPosition[0][2] = 0;
+	buildingType[10] = 21;
+	buildingPosition[10][0] = -110;
+	buildingPosition[10][1] = 80;
+	buildingPosition[10][2] = 0;
 
-	buildingType[0] = 22;
-	buildingPosition[0][0] = -990;
-	buildingPosition[0][1] = -60;
-	buildingPosition[0][2] = 0;
+	buildingType[11] = 22;
+	buildingPosition[11][0] = -90;
+	buildingPosition[11][1] = -60;
+	buildingPosition[11][2] = 0;
 }
 
 void render_scene()
@@ -222,10 +223,12 @@ void render_scene()
 	}
 
 	// Buildings
-	for(i=0; i<NBBUILDINGS; i++) {
+	//for(i=0; i<NBBUILDINGS; i++)
+	{
 		glPushMatrix();
-		glTranslatef(buildingPosition[i][0], buildingPosition[i][1], buildingPosition[i][2]);
-		glCallList(buildingType[i]);
+		//glTranslatef(buildingPosition[i][0], buildingPosition[i][1], buildingPosition[i][2]);
+		//glCallList(buildingType[i]);
+		glCallList(10); // Displays the city
 		glPopMatrix();
 	}
 	//-----------------------------------------------------------------------------------------<<<
@@ -414,6 +417,7 @@ GLvoid window_timer()
 		{
 			position[robotIndex][0] = tempPosition[0];
 			position[robotIndex][1] = tempPosition[1];
+			setAllCoords(15);
 		}
 	  }
 
@@ -426,6 +430,7 @@ GLvoid window_timer()
 		{
 			position[robotIndex][0] = tempPosition[0];
 			position[robotIndex][1] = tempPosition[1];
+			setAllCoords(15);
 		}
 	  }
 	}
@@ -457,6 +462,7 @@ GLvoid window_timer()
 			{
 				position[robotIndex][0] = tempPosition[0];
 				position[robotIndex][1] = tempPosition[1];
+				setAllCoords(15);
 			}
 			else {
 				endActionTime[robotIndex] = clock() - 1000;
@@ -571,7 +577,8 @@ int checkCollision(double robotPosition[3], int robotIndex)
 		}
 	}
 	for(i = 0; i<NBBUILDINGS && collision == 0; i++)
-	{	object = getBuilding(buildingPosition[i], buildingType[i]);
+	{
+		object = getBuilding(buildingPosition[i], buildingType[i]);
 		if (inCollision(bender, object))
 			collision = 1;
 		free(object);
