@@ -6,7 +6,7 @@
 void load_textures(char *chemin, int *texId) {
 	int i;
 	
-	char texName[14][20] = {"mars2.bmp", "mur1.bmp", "mur1.bmp", "mur1.bmp", "mur1.bmp", "mur1.bmp", "mur1.bmp",
+	char texName[14][20] = {"mars2.bmp", "mur1.bmp", "mur2.bmp", "mur3.bmp", "mur4.bmp", "mur5.bmp", "mur6.bmp",
 						"cyl10.bmp", "cyl11.bmp", "cyl12.bmp", "cyl13.bmp", "cyl14.bmp", "eau2.bmp", "skybox.bmp"};
 	
 	for(i=0;i<14;i++)
