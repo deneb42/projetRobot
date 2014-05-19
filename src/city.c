@@ -23,45 +23,45 @@ void makeSky(int tex)
 			glBindTexture(GL_TEXTURE_2D,tex);
 
 			glBegin(GL_POLYGON);//millieu
-				glTexCoord2f(0.25, 0.65);	glVertex3f(-300,300,300);
-				glTexCoord2f(0.5, 0.65);		glVertex3f(300,300,300);
-				glTexCoord2f(0.5, 0.34);		glVertex3f(300,300,-300);
-				glTexCoord2f(0.25, 0.34);    glVertex3f(-300,300,-300);
+				glTexCoord2f(0.25, 0.66);	glVertex3f(-300,300,300);
+				glTexCoord2f(0.5, 0.66);		glVertex3f(300,300,300);
+				glTexCoord2f(0.5, 0.33);		glVertex3f(300,300,-300);
+				glTexCoord2f(0.25, 0.33);    glVertex3f(-300,300,-300);
 			glEnd();
 
 			glBegin(GL_POLYGON);//haut
 				glTexCoord2f(0.25, 1);		glVertex3f(-300,-300,300);
 				glTexCoord2f(0.5, 1);		glVertex3f(300,-300,300);
-				glTexCoord2f(0.5, 0.65);		glVertex3f(300,300,300);
-				glTexCoord2f(0.25, 0.65);    glVertex3f(-300,300,300);
+				glTexCoord2f(0.5, 0.66);		glVertex3f(300,300,300);
+				glTexCoord2f(0.25, 0.66);    glVertex3f(-300,300,300);
 			glEnd();
 
 			glBegin(GL_POLYGON);//gauche
-				glTexCoord2f(0, 0.63);		glVertex3f(-300,-300,300);
-				glTexCoord2f(0.25, 0.63);		glVertex3f(-300,300,300);
-				glTexCoord2f(0.25, 0.36);		glVertex3f(-300,300,-300);
-				glTexCoord2f(0, 0.36);      glVertex3f(-300,-300,-300);
+				glTexCoord2f(0, 0.66);		glVertex3f(-300,-300,300);
+				glTexCoord2f(0.25, 0.66);		glVertex3f(-300,300,300);
+				glTexCoord2f(0.25, 0.33);		glVertex3f(-300,300,-300);
+				glTexCoord2f(0, 0.33);      glVertex3f(-300,-300,-300);
 			glEnd();
 
 			glBegin(GL_POLYGON);//bas
-				glTexCoord2f(0.25, 0.36);	glVertex3f(-300,300,-300);
-				glTexCoord2f(0.5, 0.36);		glVertex3f(300,300,-300);
+				glTexCoord2f(0.25, 0.33);	glVertex3f(-300,300,-300);
+				glTexCoord2f(0.5, 0.33);		glVertex3f(300,300,-300);
 				glTexCoord2f(0.5, 0);		glVertex3f(300,-300,-300);
 				glTexCoord2f(0.25, 0);      glVertex3f(-300,-300,-300);
 			glEnd();
 
 			glBegin(GL_POLYGON);//droite
-				glTexCoord2f(0.5, 0.63);		glVertex3f(300,300,300);
-				glTexCoord2f(0.75, 0.63);		glVertex3f(300,-300,300);
-				glTexCoord2f(0.75, 0.36);		glVertex3f(300,-300,-300);
-				glTexCoord2f(0.5, 0.36);      glVertex3f(300,300,-300);
+				glTexCoord2f(0.5, 0.66);		glVertex3f(300,300,300);
+				glTexCoord2f(0.75, 0.66);		glVertex3f(300,-300,300);
+				glTexCoord2f(0.75, 0.33);		glVertex3f(300,-300,-300);
+				glTexCoord2f(0.5, 0.33);      glVertex3f(300,300,-300);
 			glEnd();
 
 			glBegin(GL_POLYGON);//derrière
-				glTexCoord2f(0.75, 0.63);	glVertex3f(300,-300,300);
-				glTexCoord2f(1, 0.63);		glVertex3f(-300,-300,300);
-				glTexCoord2f(1, 0.36);		glVertex3f(-300,-300,-300);
-				glTexCoord2f(0.75, 0.36);      glVertex3f(300,-300,-300);
+				glTexCoord2f(0.75, 0.66);	glVertex3f(300,-300,300);
+				glTexCoord2f(1, 0.66);		glVertex3f(-300,-300,300);
+				glTexCoord2f(1, 0.33);		glVertex3f(-300,-300,-300);
+				glTexCoord2f(0.75, 0.33);      glVertex3f(300,-300,-300);
 			glEnd();
 
 			glDisable(GL_TEXTURE_2D);

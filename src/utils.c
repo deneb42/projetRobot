@@ -9,13 +9,13 @@ void loadTexture(char* path, char* name, int *tex)
 
 	sprintf(nameWPath, "%stextures/%s", path, name);
 
+	printf("loading : %s\n", nameWPath);
+
 	if (!(*tex= loadBMPTexture(nameWPath)) )
 	{
 		printf("Could not read '%s'\n", nameWPath);
 		exit(EXIT_FAILURE);
 	}
-	else
-		printf("loading : %s\n", nameWPath);
 }
 
 void drawRepere()
